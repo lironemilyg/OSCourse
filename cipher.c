@@ -36,13 +36,13 @@ int main(int argc, char *argv[]) { //from tutorial point: https://www.tutorialsp
 
 	//openning src directory
 	if ((sourceD = opendir(sourceDir)) == NULL) {
-		printf("Error opening src directory\n");
+		printf("Error opening src directory: %s\n", strerror(errno));
 		return -1; // ERROR!
 	}
 
 	//try to open key file
 	if ((kf = open(keyFile, O_RDONLY)) < 0) {
-		printf("Error opening key file\n");
+		printf("Error opening key file: %s\n", strerror(errno));
 		return -1;
 	}
 
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) { //from tutorial point: https://www.tutorialsp
 		if ( errno == 2) { //No such file or directory error
 			int temp = mkdir(resultDir, 0777);
 			if (temp != 0) { //checking creating directory
-				printf("Error creating directory\n");
+				printf("Error creating directory: %s\n", strerror(errno));
 				return -1;
 			}
 		}
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) { //from tutorial point: https://www.tutorialsp
 
 	//result directory exist. try to open result directory
 	if ((resD = opendir(resultDir)) == NULL) {
-		printf("Error opening result directory\n");
+		printf("Error opening result directory: %s\n", strerror(errno));
 		return -1; // ERROR!
 	}
 
@@ -84,15 +84,15 @@ int main(int argc, char *argv[]) { //from tutorial point: https://www.tutorialsp
 
 	}
 	if (close(kf) < 0) {
-		printf("Error close key file\n");
+		printf("Error close key file: %s\n", strerror(errno));
 		return -1; // ERROR!
 	}
 	if (closedir(resD) < 0) {
-		printf("Error close result directory \n");
+		printf("Error close result directory: %s\n", strerror(errno));
 		return -1; // ERROR!
 	}
 	if (closedir(sourceD) < 0) {
-		printf("Error close source directory \n");
+		printf("Error close source directory: %s\n", strerror(errno));
 		return -1; // ERROR!
 	}
 
@@ -107,13 +107,13 @@ int xorfiles(char *inputName, char *encName, char *keyFile, int kf) {
 
 	//try to open input file
 	if ((inpF = open(inputName, O_RDONLY)) < 0) {
-		printf("Error opening input file\n");
+		printf("Error opening input file: %s\n", strerror(errno));
 		return -1;
 	}
 
 	//try to open output file to write
 	if ((encF = open(encName, mode, 644)) < 0) {
-		printf("Error opening output file\n");
+		printf("Error opening output file: %s\n", strerror(errno));
 		return -1;
 	}
 	lenKey = read(kf, bufK, READBYTE); //read key file - error will check in loop
@@ -121,15 +121,15 @@ int xorfiles(char *inputName, char *encName, char *keyFile, int kf) {
 	while (flag) {
 		lenInput = read(inpF, bufI, READBYTE); //read input file
 		if (lenKey < 0 || lenInput < 0) {
-			printf("Error reading from file\n");
+			printf("Error reading from file: %s\n", strerror(errno));
 			if (close(kf) < 0) {
-				printf("Error close key file\n");
+				printf("Error close key file: %s\n", strerror(errno));
 			}
 			if (close(encF) < 0) {
-				printf("Error close encripted file\n");
+				printf("Error close encripted file: %s\n", strerror(errno));
 			}
 			if (close(inpF) < 0) {
-				printf("Error close input file\n");
+				printf("Error close input file: %s\n", strerror(errno));
 			}
 
 			return -1;
@@ -141,24 +141,24 @@ int xorfiles(char *inputName, char *encName, char *keyFile, int kf) {
 
 			if (lenKey <= j) {  //checking if we end our key buffer.
 				if (close(kf) < 0) {
-					printf("Error close key file\n");
+					printf("Error close key file: %s\n", strerror(errno));
 					return -1; // ERROR!
 				}
 				if ((kf = open(keyFile, O_RDONLY)) < 0) {
-					printf("Error opening key file\n");
+					printf("Error opening key file: %s\n", strerror(errno));
 					return -1;
 				}
 				j = 0;
 				if ((lenKey = read(kf, bufK, READBYTE)) < 0) {
-					printf("Error reading from file\n");
+					printf("Error reading from file: %s\n", strerror(errno));
 					if (close(kf) < 0) {
-						printf("Error close key file\n");
+						printf("Error close key file: %s\n", strerror(errno));
 					}
 					if (close(encF) < 0) {
-						printf("Error close encripted file\n");
+						printf("Error close encripted file: %s\n", strerror(errno));
 					}
 					if (close(inpF) < 0) {
-						printf("Error close input file\n");
+						printf("Error close input file: %s\n", strerror(errno));
 					}
 					return -1;
 				}
@@ -169,13 +169,13 @@ int xorfiles(char *inputName, char *encName, char *keyFile, int kf) {
 		if (lenOutput < 0) {
 			printf("Error writing to file: %s\n", strerror(errno));
 			if (close(kf) < 0) {
-				printf("Error close key file\n");
+				printf("Error close key file: %s\n", strerror(errno));
 			}
 			if (close(encF) < 0) {
-				printf("Error close encripted file\n");
+				printf("Error close encripted file: %s\n", strerror(errno));
 			}
 			if (close(inpF) < 0) {
-				printf("Error close input file\n");
+				printf("Error close input file: %s\n", strerror(errno));
 			}
 			return -1;
 		}
@@ -186,11 +186,11 @@ int xorfiles(char *inputName, char *encName, char *keyFile, int kf) {
 	}
 
 	if (close(encF) < 0) {
-		printf("Error close encripted file\n");
+		printf("Error close encripted file: %s\n", strerror(errno));
 		return -1;
 	}
 	if (close(inpF) < 0) {
-		printf("Error close input file\n");
+		printf("Error close input file: %s\n", strerror(errno);
 		return -1;
 	}
 	return 0;
