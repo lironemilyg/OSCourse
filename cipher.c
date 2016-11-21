@@ -190,7 +190,7 @@ int xorfiles(char *inputName, char *encName, char *keyFile, int kf) {
 		return -1;
 	}
 	if (close(inpF) < 0) {
-		printf("Error close input file: %s\n", strerror(errno);
+		printf("Error close input file: %s\n", strerror(errno));
 		return -1;
 	}
 	return 0;
