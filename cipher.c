@@ -9,7 +9,7 @@
 #include <stdbool.h>
 
 #define NAMELEN 100
-#define READBYTE 2048
+#define READBYTE 1
 
 //declaration of helper function
 int xorfiles(char *inputName, char *encName, char *keyFile, int kf);
@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) { //from tutorial point: https://www.tutorialsp
 int xorfiles(char *inputName, char *encName, char *keyFile, int kf) {
 	int inpF, encF, i, j = 0;
 	mode_t mode = O_RDWR | O_CREAT | O_TRUNC;
-	char bufI[READBYTE], bufK[READBYTE], bufR[READBYTE];
+	char bufI, bufK, bufR;
 	ssize_t lenOutput, lenInput, lenKey;
 	bool flag = true;
 
@@ -116,10 +116,20 @@ int xorfiles(char *inputName, char *encName, char *keyFile, int kf) {
 		printf("Error opening output file: %s\n", strerror(errno));
 		return -1;
 	}
-	lenKey = read(kf, bufK, READBYTE); //read key file - error will check in loop
-	//we can use in 1MB of memory so we can save the times our program read/write to file.
 	while (flag) {
-		lenInput = read(inpF, bufI, READBYTE); //read input file
+		lenKey = read(kf, &bufK, READBYTE); 
+		lenInput = read(inpF, &bufI, READBYTE); //read input file
+		if (lenKey == 0) {  //checking if we end our key buffer.
+			if (close(kf) < 0) {
+				printf("Error close key file: %s\n", strerror(errno));
+				return -1; // ERROR!
+			}
+			if ((kf = open(keyFile, O_RDONLY)) < 0) {
+				printf("Error opening key file: %s\n", strerror(errno));
+				return -1;
+			}
+			lenKey = read(kf, &bufK, READBYTE);
+		}
 		if (lenKey < 0 || lenInput < 0) {
 			printf("Error reading from file: %s\n", strerror(errno));
 			if (close(kf) < 0) {
@@ -131,40 +141,15 @@ int xorfiles(char *inputName, char *encName, char *keyFile, int kf) {
 			if (close(inpF) < 0) {
 				printf("Error close input file: %s\n", strerror(errno));
 			}
-
 			return -1;
 		}
 
-		for (i = 0; i < lenInput; i++) {
-			bufR[i] = bufI[i] ^ bufK[j];
-			j++;
-
-			if (lenKey <= j) {  //checking if we end our key buffer.
-				if (close(kf) < 0) {
-					printf("Error close key file: %s\n", strerror(errno));
-					return -1; // ERROR!
-				}
-				if ((kf = open(keyFile, O_RDONLY)) < 0) {
-					printf("Error opening key file: %s\n", strerror(errno));
-					return -1;
-				}
-				j = 0;
-				if ((lenKey = read(kf, bufK, READBYTE)) < 0) {
-					printf("Error reading from file: %s\n", strerror(errno));
-					if (close(kf) < 0) {
-						printf("Error close key file: %s\n", strerror(errno));
-					}
-					if (close(encF) < 0) {
-						printf("Error close encripted file: %s\n", strerror(errno));
-					}
-					if (close(inpF) < 0) {
-						printf("Error close input file: %s\n", strerror(errno));
-					}
-					return -1;
-				}
-			}
+		if (lenInput == 0) {
+			flag = false;
+			continue;
 		}
-		lenOutput = write(encF, bufR, i); //we write only the bytes we read
+		bufR = bufI ^ bufK;
+		lenOutput = write(encF, &bufR, i); //we write only the bytes we read
 
 		if (lenOutput < 0) {
 			printf("Error writing to file: %s\n", strerror(errno));
@@ -178,10 +163,6 @@ int xorfiles(char *inputName, char *encName, char *keyFile, int kf) {
 				printf("Error close input file: %s\n", strerror(errno));
 			}
 			return -1;
-		}
-
-		if (lenInput < READBYTE) {
-			flag = false;
 		}
 	}
 
