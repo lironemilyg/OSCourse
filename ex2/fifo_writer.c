@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
     	return -1;
     }
 
-    fd = open(FILEPATH, O_RDWR | O_CREAT);
+    fd = open(FILEPATH, 0600);
     if (fd < 0){
     	printf("Error opening file for writing: %s\n", strerror(errno));
     	return -1;
