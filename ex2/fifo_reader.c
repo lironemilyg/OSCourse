@@ -49,7 +49,7 @@ int main(){
     			i++;
     		}
     	}
-    //	printf("reading %d, temp: %d ....%c\n",i,temp, in);
+    	printf("reading %d, temp: %d ...\n",i,temp);
     	temp = read(fd, in, READBYTE);
     }
     printf("endddddd! read\n");
