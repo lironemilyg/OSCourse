@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	free(arr);  // this also ensures the changes commit to the file
+//	free(arr);  // this also ensures the changes commit to the file
 	// Counting time elapsed
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
