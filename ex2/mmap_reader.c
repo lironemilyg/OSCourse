@@ -20,7 +20,9 @@
 #define FILEPATH "/tmp/mmapped.bin"
 
 void my_signal_handler(int signum) {
+	printf("signal...");
 	if (signum == SIGUSR1) {
+		printf("\nSIGUSR1\n");
 		int fd, i, result, fileSize;
 		int flag = 1;
 		struct stat s;
