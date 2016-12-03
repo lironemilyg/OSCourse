@@ -19,6 +19,7 @@
 #include <signal.h>
 
 #define FILEPATH "/tmp/osfifo"
+#define READBYTE 1024
 
 int main(){
 	printf("begin read\n");
@@ -39,14 +40,16 @@ int main(){
 		return -1;
 	}
 
-	char in;
-	temp = read(fd, &in, sizeof(char));
+	char in[READBYTE];
+	temp = read(fd, in, READBYTE);
 	i = 0;
     while (temp > 0) {
-    	if('a' == in)
-    		i++;
+    	for(int j=0; j<temp; j++){
+    		if('a' == in)
+    			i++;
+    	}
     	printf("reading %d, temp: %d ....%c\n",i,temp, in);
-    	temp = read(fd, &in, sizeof(char));
+    	temp = read(fd, in, READBYTE);
     }
     printf("endddddd! read\n");
 
