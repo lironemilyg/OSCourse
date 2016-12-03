@@ -63,10 +63,9 @@ void my_signal_handler(int signum) {
 		}
 
 		while (a_flag) {
-			if (arr[i] != 'a')
+			if (arr[i] == '\0'){
 				a_flag = 0;
-			else
-				i++;
+			i++;
 		}
 
 		if (gettimeofday(&t2, NULL) < 0) {
