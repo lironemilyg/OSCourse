@@ -43,16 +43,19 @@ int main(){
 	i = 0;
     while ((temp = read(fd, &in, sizeof(char)))>0) {
     	printf("%d %c\n",temp, in);
-        if('a' == in)
-        	i++;
+//    	for(int j=0;j<temp;j++){
+//    		if('a' == in)
+//    			i++;
+//    	}
     }
 
-    printf("out : %d ",temp);
+    printf("out : %d \n",temp);
 
     if( gettimeofday(&t2, NULL) < 0){
 		printf("Error getting time: %s\n", strerror(errno));
 		return -1;
 	}
+
 	// Counting time elapsed
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
