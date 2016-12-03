@@ -44,6 +44,8 @@ int main(){
     while (read(fd, &in, sizeof(char)) > 0) {
     	if('a' == in)
     		i++;
+    	else
+    		break;
     }
 
 

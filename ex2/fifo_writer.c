@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	for (i = 0; i < NUM -1; ++i) {
+	for (i = 0; i < NUM ; ++i) {
 		temp = write(fd, "a", sizeof("a"));
 		if(  temp < 0){
 			printf("Error writing to file: %s\n", strerror(errno));
