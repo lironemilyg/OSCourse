@@ -42,7 +42,8 @@ int main(){
 	}
 	char in;
 	i = 0;
-    while (read(fd, &in, 1)>0) {
+	printf("begin read");
+    while (read(fd, &in, sizeof(char))>0) {
         if('a' == in)
         	i++;
     }
