@@ -40,12 +40,13 @@ int main(){
 	}
 
 	char in;
+	int temp = read(fd, &in, sizeof(char));
 	i = 0;
-    while (read(fd, &in, sizeof(char)) > 0) {
+    while (temp > 0) {
     	if('a' == in)
     		i++;
-    	else
-    		break;
+    	temp = read(fd, &in, sizeof(char));
+    	printf("reading %d ....%c\n",i, in);
     }
 
 
