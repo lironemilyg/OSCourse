@@ -57,53 +57,53 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	// Something has to be written at the end of the file,
-	// so the file actually has the new size.
-	result = write(fd, "", 1);
-	if (1 != result) {
-		printf("Error writing last byte of the file: %s\n", strerror(errno));
-		return -1;
-	}
-
-	//Now the file is ready to be mmapped.
-	arr = (char*) mmap(NULL,NUM, PROT_READ | PROT_WRITE,MAP_SHARED, fd, 0);
-
-	if (MAP_FAILED == arr) {
-		printf("Error mmapping the file: %s\n", strerror(errno));
-		return -1;
-	}
-
-	if( gettimeofday(&t1, NULL) < 0){
-		printf("Error getting time: %s\n", strerror(errno));
-		return -1;
-	}
-
-//	// now write to the file as if it were memory
-//	for (i = 0; i < NUM -1; ++i) {
-//		arr[i] = 'a';
+//	// Something has to be written at the end of the file,
+//	// so the file actually has the new size.
+//	result = write(fd, "", 1);
+//	if (1 != result) {
+//		printf("Error writing last byte of the file: %s\n", strerror(errno));
+//		return -1;
 //	}
-//	arr[NUM-1]='\0';
-
-	if( gettimeofday(&t2, NULL) < 0){
-		printf("Error getting time: %s\n", strerror(errno));
-		return -1;
-	}
-
-	free(arr);  // this also ensures the changes commit to the file
-	if (-1 == munmap(arr, NUM)) {
-		printf("Error un-mmapping the file: %s\n", strerror(errno));
-		return -1;
-	}
-
-	// Counting time elapsed
-	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
-	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
-
-	//taking from - http://stackoverflow.com/questions/6168636/how-to-trigger-sigusr1-and-sigusr2
-	kill(RPID, SIGUSR1);
-	// Final report
-	printf("%d were written in %f microseconds through MMAP\n", NUM,elapsed_microsec);
-	// un-mmaping doesn't close the file, so we still need to do that.
+//
+//	//Now the file is ready to be mmapped.
+//	arr = (char*) mmap(NULL,NUM, PROT_READ | PROT_WRITE,MAP_SHARED, fd, 0);
+//
+//	if (MAP_FAILED == arr) {
+//		printf("Error mmapping the file: %s\n", strerror(errno));
+//		return -1;
+//	}
+//
+//	if( gettimeofday(&t1, NULL) < 0){
+//		printf("Error getting time: %s\n", strerror(errno));
+//		return -1;
+//	}
+//
+////	// now write to the file as if it were memory
+////	for (i = 0; i < NUM -1; ++i) {
+////		arr[i] = 'a';
+////	}
+////	arr[NUM-1]='\0';
+//
+//	if( gettimeofday(&t2, NULL) < 0){
+//		printf("Error getting time: %s\n", strerror(errno));
+//		return -1;
+//	}
+//
+//	free(arr);  // this also ensures the changes commit to the file
+//	if (-1 == munmap(arr, NUM)) {
+//		printf("Error un-mmapping the file: %s\n", strerror(errno));
+//		return -1;
+//	}
+//
+//	// Counting time elapsed
+//	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
+//	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
+//
+//	//taking from - http://stackoverflow.com/questions/6168636/how-to-trigger-sigusr1-and-sigusr2
+//	kill(RPID, SIGUSR1);
+//	// Final report
+//	printf("%d were written in %f microseconds through MMAP\n", NUM,elapsed_microsec);
+//	// un-mmaping doesn't close the file, so we still need to do that.
 	if (close(fd)){
 		printf("Error close file: %s\n", strerror(errno));
 		return -1;
