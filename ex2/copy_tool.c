@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	if ((destfd = open(destFile,  O_RDWR | O_CREAT)) < 0) {
+	if ((destfd = open(destFile,  O_RDWR | O_CREAT,0777)) < 0) {
 		printf("Error opening dst file: %s\n", strerror(errno));
 		return -1;
 	}
