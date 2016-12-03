@@ -48,7 +48,7 @@ int main(){
     	printf("reading %d, temp: %d ....%c\n",i,temp, in);
     	temp = read(fd, &in, sizeof(char));
     }
-    printf("end! read\n");
+    printf("endddddd! read\n");
 
 
     if( gettimeofday(&t2, NULL) < 0){
