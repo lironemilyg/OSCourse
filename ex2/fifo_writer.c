@@ -22,6 +22,7 @@
 
 int main(int argc, char* argv[]) {
 	int NUM, i;
+	int temp;
 	// Time measurement structures
 	struct timeval t1, t2;
 	double elapsed_microsec;
@@ -55,7 +56,9 @@ int main(int argc, char* argv[]) {
 	}
 
 	for (i = 0; i < NUM -1; ++i) {
-		if( write(fd, "a", sizeof(char)) < 0){
+		temp = write(fd, "a", sizeof("a"));
+		printf("%d\n", temp);
+		if(  temp < 0){
 			printf("Error writing to file: %s\n", strerror(errno));
 			return -1;
 		}
