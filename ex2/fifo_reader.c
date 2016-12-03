@@ -45,9 +45,10 @@ int main(){
     while (temp > 0) {
     	if('a' == in)
     		i++;
-    	temp = read(fd, &in, sizeof(char));
     	printf("reading %d, temp: %d ....%c\n",i,temp, in);
+    	temp = read(fd, &in, sizeof(char));
     }
+    printf("end! read\n");
 
 
     if( gettimeofday(&t2, NULL) < 0){
@@ -60,6 +61,7 @@ int main(){
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
 	printf("%d were read in %f microseconds through FIFO\n", i ,elapsed_microsec);
+
 	return 0;
 }
 
