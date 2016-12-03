@@ -77,13 +77,13 @@ int main(int argc, char* argv[]) {
 		printf("Error getting time: %s\n", strerror(errno));
 		return -1;
 	}
-//
-////	// now write to the file as if it were memory
-////	for (i = 0; i < NUM -1; ++i) {
-////		arr[i] = 'a';
-////	}
-////	arr[NUM-1]='\0';
-//
+
+//	// now write to the file as if it were memory
+//	for (i = 0; i < NUM -1; ++i) {
+//		arr[i] = 'a';
+//	}
+//	arr[NUM-1]='\0';
+
 	if( gettimeofday(&t2, NULL) < 0){
 		printf("Error getting time: %s\n", strerror(errno));
 		return -1;
@@ -95,7 +95,6 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-//	free(arr);  // this also ensures the changes commit to the file
 	// Counting time elapsed
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
