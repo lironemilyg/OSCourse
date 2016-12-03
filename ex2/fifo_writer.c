@@ -72,9 +72,9 @@ int main(int argc, char* argv[]) {
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
-
-	printf("%d were written in %f microseconds through FIFO\n", NUM,elapsed_microsec);
 	sleep(15);
+	printf("%d were written in %f microseconds through FIFO\n", NUM,elapsed_microsec);
+
 	if (close(fd) < 0) {
 		printf("Error close file: %s\n", strerror(errno));
 		return -1;
