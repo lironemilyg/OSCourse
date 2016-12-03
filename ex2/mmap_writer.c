@@ -101,9 +101,9 @@ int main(int argc, char* argv[]) {
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
 //	//taking from - http://stackoverflow.com/questions/6168636/how-to-trigger-sigusr1-and-sigusr2
-//	kill(RPID, SIGUSR1);
+	kill(RPID, SIGUSR1);
 //	// Final report
-//	printf("%d were written in %f microseconds through MMAP\n", NUM,elapsed_microsec);
+	printf("%d were written in %f microseconds through MMAP\n", NUM,elapsed_microsec);
 //	// un-mmaping doesn't close the file, so we still need to do that.
 	if (close(fd)){
 		printf("Error close file: %s\n", strerror(errno));
