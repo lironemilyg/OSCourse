@@ -57,7 +57,9 @@ int main(int argc, char* argv[]) {
 
 	for (i = 0; i < NUM -1; ++i) {
 		temp = write(fd, "a", sizeof("a"));
+		fflush(NULL);
 		printf("%d\n", temp);
+		fflush(NULL);
 		if(  temp < 0){
 			printf("Error writing to file: %s\n", strerror(errno));
 			return -1;
