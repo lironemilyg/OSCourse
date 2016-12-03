@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
     	printf("Error opening file for writing: %s\n", strerror(errno));
     	return -1;
     }
+    printf("fd %d\n", fd);
 
 	if( gettimeofday(&t1, NULL) < 0){
 		printf("Error getting time: %s\n", strerror(errno));
@@ -53,7 +54,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	for (i = 0; i < NUM -1; ++i) {
-		if( write(fd, "a", 1) < 0){
+		if( write(fd, "a", sizeof(char)) < 0){
 			printf("Error writing to file: %s\n", strerror(errno));
 			return -1;
 		}
