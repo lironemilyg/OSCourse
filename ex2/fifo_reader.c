@@ -22,6 +22,7 @@
 
 int main(){
 	printf("begin read\n");
+	int temp;
 	sleep(10);
 	// Time measurement structures
 	struct timeval t1, t2;
@@ -40,13 +41,15 @@ int main(){
 
 	char in;
 	i = 0;
-    while (read(fd, &in, sizeof(char))>0) {
-    	printf("%c\n",in);
+    while ((temp = read(fd, &in, sizeof(char)))>0) {
+    	printf("%d %c\n",temp, in);
         if('a' == in)
         	i++;
     }
 
-	if( gettimeofday(&t2, NULL) < 0){
+    printf("out : %d ",temp);
+
+    if( gettimeofday(&t2, NULL) < 0){
 		printf("Error getting time: %s\n", strerror(errno));
 		return -1;
 	}
