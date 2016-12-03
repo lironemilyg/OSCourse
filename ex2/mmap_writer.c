@@ -78,11 +78,11 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-//	// now write to the file as if it were memory
-//	for (i = 0; i < NUM -1; ++i) {
-//		arr[i] = 'a';
-//	}
-//	arr[NUM-1]='\0';
+	// now write to the file as if it were memory
+	for (i = 0; i < NUM -1; ++i) {
+		arr[i] = 'a';
+	}
+	arr[NUM-1]='\0';
 
 	if( gettimeofday(&t2, NULL) < 0){
 		printf("Error getting time: %s\n", strerror(errno));
