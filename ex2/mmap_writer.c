@@ -78,11 +78,11 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	// now write to the file as if it were memory
-	for (i = 0; i < NUM -1; ++i) {
-		arr[i] = 'a';
-	}
-	arr[NUM-1]='\0';
+//	// now write to the file as if it were memory
+//	for (i = 0; i < NUM -1; ++i) {
+//		arr[i] = 'a';
+//	}
+//	arr[NUM-1]='\0';
 
 	if( gettimeofday(&t2, NULL) < 0){
 		printf("Error getting time: %s\n", strerror(errno));
@@ -104,10 +104,10 @@ int main(int argc, char* argv[]) {
 	// Final report
 	printf("%d were written in %f microseconds through MMAP\n", NUM,elapsed_microsec);
 	// un-mmaping doesn't close the file, so we still need to do that.
-//	if (close(fd)){
-//		printf("Error close file: %s\n", strerror(errno));
-//		return -1;
-//	}
+	if (close(fd)){
+		printf("Error close file: %s\n", strerror(errno));
+		return -1;
+	}
 
 	// Exit gracefully
 	return 0;
