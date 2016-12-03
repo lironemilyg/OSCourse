@@ -65,12 +65,12 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	free(buff);
 	if( gettimeofday(&t2, NULL) < 0){
 		printf("Error getting time: %s\n", strerror(errno));
 		return -1;
 	}
 
+	free(buff);
 	// Counting time elapsed
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
