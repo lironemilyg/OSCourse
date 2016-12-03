@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	//try to open src file
-	if ((srcfd = open(srcFile, 0777)) < 0) {
+	if ((srcfd = open(srcFile, O_RDONLY)) < 0) {
 		printf("Error opening src file: %s\n", strerror(errno));
 		return -1;
 	}
