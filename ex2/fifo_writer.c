@@ -41,7 +41,8 @@ int main(int argc, char* argv[]) {
     	return -1;
     }
     printf("fifo created\n");
-    fd = open(FILEPATH, O_CREAT|O_WRONLY, 0777);
+    fd = open(FILEPATH, 0600, 0600);
+    printf("after open\n");
     if (fd < 0){
     	printf("Error opening file for writing: %s\n", strerror(errno));
     	return -1;
