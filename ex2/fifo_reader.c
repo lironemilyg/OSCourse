@@ -8,6 +8,7 @@
 
 #include <sys/time.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -18,13 +19,15 @@
 #include <string.h>
 #include <signal.h>
 
+
 #define FILEPATH "/tmp/osfifo"
 #define READBYTE 1024
 
 int main(){
 	printf("begin read\n");
 	char in[READBYTE];
-	int temp,fd, i,j;
+	int readlen,fd, i,j;
+	bool flag = true;
 	sleep(10);
 	// Time measurement structures
 	struct timeval t1, t2;
@@ -41,16 +44,18 @@ int main(){
 	}
 
 
-	temp = read(fd, in, READBYTE);
 	i = 0;
-    while (temp > 0) {
-    	for(j=0; j<temp; j++){
+    while (flag) {
+    	readlen = read(fd, in, READBYTE);
+    	for(j=0; j<readlen; j++){
     		if('a' == in[j]){
     			i++;
     		}
     	}
-    	printf("reading %d, temp: %d ...\n",i,temp);
-    	temp = read(fd, in, READBYTE);
+    	if (readlen < READBYTE) {
+    		flag = false;
+    	}
+    	printf("reading %d, readlen: %d ...\n",i,readlen);
     }
     printf("endddddd! read\n");
 
