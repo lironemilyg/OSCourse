@@ -22,7 +22,7 @@
 
 int main(){
 	printf("begin read\n");
-	sleep(15);
+//	sleep(15);
 	// Time measurement structures
 	struct timeval t1, t2;
 	double elapsed_microsec;
