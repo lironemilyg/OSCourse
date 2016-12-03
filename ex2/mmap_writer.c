@@ -72,11 +72,11 @@ int main(int argc, char* argv[]) {
 		printf("Error mmapping the file: %s\n", strerror(errno));
 		return -1;
 	}
-//
-//	if( gettimeofday(&t1, NULL) < 0){
-//		printf("Error getting time: %s\n", strerror(errno));
-//		return -1;
-//	}
+
+	if( gettimeofday(&t1, NULL) < 0){
+		printf("Error getting time: %s\n", strerror(errno));
+		return -1;
+	}
 //
 ////	// now write to the file as if it were memory
 ////	for (i = 0; i < NUM -1; ++i) {
@@ -84,10 +84,10 @@ int main(int argc, char* argv[]) {
 ////	}
 ////	arr[NUM-1]='\0';
 //
-//	if( gettimeofday(&t2, NULL) < 0){
-//		printf("Error getting time: %s\n", strerror(errno));
-//		return -1;
-//	}
+	if( gettimeofday(&t2, NULL) < 0){
+		printf("Error getting time: %s\n", strerror(errno));
+		return -1;
+	}
 //
 //	free(arr);  // this also ensures the changes commit to the file
 //	if (-1 == munmap(arr, NUM)) {
