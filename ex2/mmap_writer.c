@@ -57,13 +57,13 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-//	// Something has to be written at the end of the file,
-//	// so the file actually has the new size.
-//	result = write(fd, "", 1);
-//	if (1 != result) {
-//		printf("Error writing last byte of the file: %s\n", strerror(errno));
-//		return -1;
-//	}
+	// Something has to be written at the end of the file,
+	// so the file actually has the new size.
+	result = write(fd, "", 1);
+	if (1 != result) {
+		printf("Error writing last byte of the file: %s\n", strerror(errno));
+		return -1;
+	}
 //
 //	//Now the file is ready to be mmapped.
 //	arr = (char*) mmap(NULL,NUM, PROT_READ | PROT_WRITE,MAP_SHARED, fd, 0);
