@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	for (i = 0; i < NUM -1; ++i) {
-		if( write(fd, 'a', sizeof('a')) < 0){
+		if( write(fd, "a", 1) < 0){
 			printf("Error writing to file: %s\n", strerror(errno));
 			return -1;
 		}
