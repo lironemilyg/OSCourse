@@ -41,12 +41,10 @@ int main(){
 
 	char in;
 	i = 0;
-    while ((temp = read(fd, &in, sizeof(char)))>0) {
+    while (read(fd, &in, sizeof(char)) > 0) {
     	printf("%d %c\n",temp, in);
-//    	for(int j=0;j<temp;j++){
-    		if('a' == in)
-    			i++;
-//    	}
+    	if('a' == in)
+    		i++;
     }
 
     printf("out : %d \n",temp);
