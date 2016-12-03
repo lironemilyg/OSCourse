@@ -27,7 +27,7 @@ int main(){
 	char in[READBYTE];
 	int readlen,fd, i,j;
 	bool flag = true;
-	sleep(10);
+//	sleep(10);
 	// Time measurement structures
 	struct timeval t1, t2;
 	double elapsed_microsec;
@@ -51,7 +51,6 @@ int main(){
     			i++;
     		}
     	}
-//    	printf("read %d\n", readlen);
     	if (readlen < READBYTE) {
     		flag = false;
     	}
