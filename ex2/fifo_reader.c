@@ -46,7 +46,7 @@ int main(){
     	if('a' == in)
     		i++;
     	temp = read(fd, &in, sizeof(char));
-    	printf("reading %d ....%c\n",i, in);
+    	printf("reading %d, temp: %d ....%c\n",i,temp, in);
     }
 
 
