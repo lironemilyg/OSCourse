@@ -22,7 +22,6 @@
 void my_signal_handler(int signum) {
 	printf("signal...");
 	if (signum == SIGUSR1) {
-		printf("\nSIGUSR1\n");
 		int fd, i, result, fileSize;
 		int flag = 1;
 		struct stat s;
@@ -63,7 +62,7 @@ void my_signal_handler(int signum) {
 			printf("Error getting time: %s\n", strerror(errno));
 			return;
 		}
-
+		printf("\nSIGUSR1\n");
 		while (a_flag) {
 			if (arr[i] == '\0')
 				a_flag = 0;
@@ -80,7 +79,7 @@ void my_signal_handler(int signum) {
 			printf("Error un-mmapping the file: %s\n", strerror(errno));
 			return;
 		}
-
+		printf("\nSIGUSR1-2\n");
 		// Counting time elapsed
 		elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 		elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
