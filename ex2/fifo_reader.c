@@ -45,8 +45,9 @@ int main(){
 	i = 0;
     while (temp > 0) {
     	for(int j=0; j<temp; j++){
-    		if('a' == in)
+    		if('a' == in[j]){
     			i++;
+    		}
     	}
     	printf("reading %d, temp: %d ....%c\n",i,temp, in);
     	temp = read(fd, in, READBYTE);
