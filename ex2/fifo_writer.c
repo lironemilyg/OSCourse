@@ -75,17 +75,20 @@ int main(int argc, char* argv[]) {
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
-	sleep(25);
+//	sleep(25);
 	printf("%d were written in %f microseconds through FIFO\n", temp,elapsed_microsec);
 
 	if (close(fd) < 0) {
 		printf("Error close file: %s\n", strerror(errno));
 		return -1;
 	}
+	printf("w1");
 	if (unlink(FILEPATH) < 0) {
 		printf("Error remove the file from the disk: %s\n",
 				strerror(errno));
 		return -1;
 	}
+	printf("w2");
+
     return 0;
 }

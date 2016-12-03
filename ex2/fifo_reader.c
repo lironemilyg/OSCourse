@@ -51,7 +51,7 @@ int main(){
     			i++;
     		}
     	}
-    	printf("read %d\n", readlen);
+//    	printf("read %d\n", readlen);
     	if (readlen < READBYTE) {
     		flag = false;
     	}
