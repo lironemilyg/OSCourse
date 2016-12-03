@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
 
 	// Something has to be written at the end of the file,
 	// so the file actually has the new size.
-	result = write(fd, '\0', 1);
+	result = write(fd, '', 1);
 	if (1 != result) {
 		printf("Error writing last byte of the file: %s\n", strerror(errno));
 		return -1;
