@@ -24,7 +24,6 @@
 #define READBYTE 1024
 
 int main(){
-	printf("begin read\n");
 	char in[READBYTE];
 	int readlen,fd, i,j;
 	bool flag = true;
@@ -55,10 +54,7 @@ int main(){
     	if (readlen < READBYTE) {
     		flag = false;
     	}
-    	printf("reading %d, readlen: %d ...\n",i,readlen);
     }
-    printf("endddddd! read\n");
-
 
     if( gettimeofday(&t2, NULL) < 0){
 		printf("Error getting time: %s\n", strerror(errno));
