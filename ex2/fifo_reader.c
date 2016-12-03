@@ -40,7 +40,7 @@ int main(){
 	}
 
 	char in;
-	int temp = read(fd, &in, sizeof(char));
+	temp = read(fd, &in, sizeof(char));
 	i = 0;
     while (temp > 0) {
     	if('a' == in)
