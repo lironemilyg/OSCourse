@@ -75,6 +75,7 @@ int main(int argc, char* argv[]) {
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
+	sleep(25);
 	printf("%d were written in %f microseconds through FIFO\n", temp,elapsed_microsec);
 
 	if (close(fd) < 0) {
