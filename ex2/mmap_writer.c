@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 	// Force the file to be of the NUM size as the (mmapped) array
-	result = lseek(fd, NUM, SEEK_SET);
+	result = lseek(fd, NUM-1, SEEK_SET);
 	if (-1 == result) {
 		printf("Error calling lseek() to 'stretch' the file: %s\n", strerror(errno));
 		return -1;
