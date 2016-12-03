@@ -44,8 +44,8 @@ int main(){
     while ((temp = read(fd, &in, sizeof(char)))>0) {
     	printf("%d %c\n",temp, in);
 //    	for(int j=0;j<temp;j++){
-//    		if('a' == in)
-//    			i++;
+    		if('a' == in)
+    			i++;
 //    	}
     }
 
