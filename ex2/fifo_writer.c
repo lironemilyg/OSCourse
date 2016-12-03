@@ -60,10 +60,10 @@ int main(int argc, char* argv[]) {
 		fflush(NULL);
 		printf("%d\n", 0);
 		fflush(NULL);
-//		if(  temp < 0){
+		if(  temp < 0){
 //			printf("Error writing to file: %s\n", strerror(errno));
 //			return -1;
-//		}
+		}
 	}
 
 	if( gettimeofday(&t2, NULL) < 0){
