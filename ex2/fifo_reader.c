@@ -23,12 +23,12 @@
 
 int main(){
 	printf("begin read\n");
-	int temp;
+	char in[READBYTE];
+	int temp,fd, i,j;
 	sleep(10);
 	// Time measurement structures
 	struct timeval t1, t2;
 	double elapsed_microsec;
-    int fd, i;
     fd = open(FILEPATH, O_RDWR | O_CREAT | O_TRUNC,0644);
     if (fd < 0){
     	printf("Error opening file for reading: %s\n", strerror(errno));
@@ -40,11 +40,11 @@ int main(){
 		return -1;
 	}
 
-	char in[READBYTE];
+
 	temp = read(fd, in, READBYTE);
 	i = 0;
     while (temp > 0) {
-    	for(int j=0; j<temp; j++){
+    	for(j=0; j<temp; j++){
     		if('a' == in[j]){
     			i++;
     		}
