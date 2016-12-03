@@ -22,12 +22,12 @@
 
 int main(){
 	printf("begin read\n");
-	sleep(5);
+	sleep(10);
 	// Time measurement structures
 	struct timeval t1, t2;
 	double elapsed_microsec;
     int fd, i;
-    fd = open(FILEPATH, O_WRONLY);
+    fd = open(FILEPATH, O_RDONLY);
     if (fd < 0){
     	printf("Error opening file for reading: %s\n", strerror(errno));
     	return -1;
