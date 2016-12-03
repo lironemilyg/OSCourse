@@ -74,7 +74,6 @@ void my_signal_handler(int signum) {
 			return;
 		}
 
-		free(arr);  // this also ensures the changes commit to the file
 		if (-1 == munmap(arr, fileSize)) {
 			printf("Error un-mmapping the file: %s\n", strerror(errno));
 			return;
