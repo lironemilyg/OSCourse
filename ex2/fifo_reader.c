@@ -21,6 +21,7 @@
 #define FILEPATH "/tmp/osfifo"
 
 int main(){
+	sleep(2);
 	// Time measurement structures
 	struct timeval t1, t2;
 	double elapsed_microsec;
