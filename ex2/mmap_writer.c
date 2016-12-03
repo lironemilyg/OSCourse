@@ -90,19 +90,19 @@ int main(int argc, char* argv[]) {
 	}
 
 	free(arr);  // this also ensures the changes commit to the file
-	if (-1 == munmap(arr, NUM)) {
-		printf("Error un-mmapping the file: %s\n", strerror(errno));
-		return -1;
-	}
-
+//	if (-1 == munmap(arr, NUM)) {
+//		printf("Error un-mmapping the file: %s\n", strerror(errno));
+//		return -1;
+//	}
+//
 	// Counting time elapsed
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
-//
+
 //	//taking from - http://stackoverflow.com/questions/6168636/how-to-trigger-sigusr1-and-sigusr2
 //	kill(RPID, SIGUSR1);
 //	// Final report
-	printf("%d were written in %f microseconds through MMAP\n", NUM,elapsed_microsec);
+//	printf("%d were written in %f microseconds through MMAP\n", NUM,elapsed_microsec);
 //	// un-mmaping doesn't close the file, so we still need to do that.
 	if (close(fd)){
 		printf("Error close file: %s\n", strerror(errno));
