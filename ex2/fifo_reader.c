@@ -21,6 +21,7 @@
 #define FILEPATH "/tmp/osfifo"
 
 int main(){
+	printf("begin read\n");
 	sleep(2);
 	// Time measurement structures
 	struct timeval t1, t2;
@@ -43,7 +44,7 @@ int main(){
 	}
 	char in;
 	i = 0;
-	printf("begin read");
+	printf("begin read\n");
     while (read(fd, &in, sizeof(char))>0) {
         if('a' == in)
         	i++;

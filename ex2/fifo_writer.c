@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 		puts("invalid number of arguments");
 		return 1; //exit(1)
 	}
-
+	printf("setting args\n");
 	//taking from - http://stackoverflow.com/questions/2784500/how-to-send-a-simple-string-between-two-programs-using-pipes
     int fd;
     /* create the FIFO (named pipe) */
@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
     	printf("Error mkfifo file: %s\n", strerror(errno));
     	return -1;
     }
-
+    printf("fifo created\n");
     fd = open(FILEPATH, O_CREAT|O_WRONLY, 0777);
     if (fd < 0){
     	printf("Error opening file for writing: %s\n", strerror(errno));
