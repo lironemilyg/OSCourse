@@ -104,10 +104,10 @@ int main(int argc, char* argv[]) {
 	// Final report
 	printf("%d were written in %f microseconds through MMAP\n", NUM,elapsed_microsec);
 	// un-mmaping doesn't close the file, so we still need to do that.
-	if (close(fd)){
-		printf("Error close file: %s\n", strerror(errno));
-		return -1;
-	}
+//	if (close(fd)){
+//		printf("Error close file: %s\n", strerror(errno));
+//		return -1;
+//	}
 
 	// Exit gracefully
 	return 0;
