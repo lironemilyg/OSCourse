@@ -64,14 +64,14 @@ int main(int argc, char* argv[]) {
 		printf("Error writing last byte of the file: %s\n", strerror(errno));
 		return -1;
 	}
-//
-//	//Now the file is ready to be mmapped.
-//	arr = (char*) mmap(NULL,NUM, PROT_READ | PROT_WRITE,MAP_SHARED, fd, 0);
-//
-//	if (MAP_FAILED == arr) {
-//		printf("Error mmapping the file: %s\n", strerror(errno));
-//		return -1;
-//	}
+
+	//Now the file is ready to be mmapped.
+	arr = (char*) mmap(NULL,NUM, PROT_READ | PROT_WRITE,MAP_SHARED, fd, 0);
+
+	if (MAP_FAILED == arr) {
+		printf("Error mmapping the file: %s\n", strerror(errno));
+		return -1;
+	}
 //
 //	if( gettimeofday(&t1, NULL) < 0){
 //		printf("Error getting time: %s\n", strerror(errno));
