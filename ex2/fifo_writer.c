@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	for (i = 0; i < NUM -1; ++i) {
-//		temp = write(fd, "a", sizeof("a"));
+		temp = write(fd, "a", sizeof("a"));
 		fflush(NULL);
 		printf("%d\n", 0);
 		fflush(NULL);
