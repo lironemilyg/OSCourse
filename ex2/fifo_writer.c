@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 		fflush(NULL);
 		if(  temp < 0){
 			printf("Error writing to file: %s\n", strerror(errno));
-//			return -1;
+			return -1;
 		}
 	}
 
