@@ -19,7 +19,8 @@
 #include <signal.h>
 
 int main(int argc, char* argv[]) {
-	int srcFile, destFile;
+	char *srcFile;
+	char* destFile;
 	char *srcMap, *dstMap;
 	int srcfd,destfd,fileSize;
 	int result;
