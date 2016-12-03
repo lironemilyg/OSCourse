@@ -80,10 +80,10 @@ int main(int argc, char* argv[]) {
 		printf("Error close file: %s\n", strerror(errno));
 		return -1;
 	}
-	if (unlink(FILEPATH) < 0) {
-		printf("Error remove the file from the disk: %s\n",
-				strerror(errno));
-		return -1;
-	}
+//	if (unlink(FILEPATH) < 0) {
+//		printf("Error remove the file from the disk: %s\n",
+//				strerror(errno));
+//		return -1;
+//	}
     return 0;
 }
