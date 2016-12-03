@@ -21,7 +21,7 @@
 
 
 #define FILEPATH "/tmp/osfifo"
-#define READBYTE 10240
+#define READBYTE 204800
 
 int main(){
 	char in[READBYTE];
@@ -51,6 +51,7 @@ int main(){
     			i++;
     		}
     	}
+    	printf("read %d\n", readlen);
     	if (readlen < READBYTE) {
     		flag = false;
     	}
