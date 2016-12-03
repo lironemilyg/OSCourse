@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 	double elapsed_microsec;
 	char *arr;
 	if (argc == 2) {
-		NUM = argv[1];
+		NUM = atoi(argv[1]);
 	} else {
 		puts("invalid number of arguments");
 		return 1; //exit(1)

@@ -29,8 +29,8 @@ int main(int argc, char* argv[]) {
 	double elapsed_microsec;
 	char *arr;
 	if (argc == 3) {
-		NUM = argv[1];
-		RPID = argv[2];
+		NUM = atoi(argv[1]);
+		RPID = atoi(argv[2]);
 	} else {
 		puts("invalid number of arguments");
 		return 1; //exit(1)
