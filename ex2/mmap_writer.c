@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-//	free(arr);  // this also ensures the changes commit to the file
+	free(arr);  // this also ensures the changes commit to the file
 	if (-1 == munmap(arr, NUM)) {
 		printf("Error un-mmapping the file: %s\n", strerror(errno));
 		return -1;
