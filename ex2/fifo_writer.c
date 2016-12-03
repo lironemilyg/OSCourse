@@ -49,19 +49,23 @@ int main(int argc, char* argv[]) {
     	return -1;
     }
 
+	char* buff=(char*)malloc(sizeof(char)*NUM);
+	for (i = 0; i < NUM ; ++i) {
+		buff[i]='a';
+	}
+
 	if( gettimeofday(&t1, NULL) < 0){
 		printf("Error getting time: %s\n", strerror(errno));
 		return -1;
 	}
 
-	for (i = 0; i < NUM ; ++i) {
-		temp = write(fd, "a", sizeof("a"));
-		if(  temp < 0){
-			printf("Error writing to file: %s\n", strerror(errno));
-			return -1;
-		}
+	temp = write(fd, buff, NUM);
+	if(  temp < 0){
+		printf("Error writing to file: %s\n", strerror(errno));
+		return -1;
 	}
 
+	free(buff);
 	if( gettimeofday(&t2, NULL) < 0){
 		printf("Error getting time: %s\n", strerror(errno));
 		return -1;
@@ -71,8 +75,7 @@ int main(int argc, char* argv[]) {
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
-	sleep(25);
-	printf("%d were written in %f microseconds through FIFO\n", NUM,elapsed_microsec);
+	printf("%d were written in %f microseconds through FIFO\n", temp,elapsed_microsec);
 
 	if (close(fd) < 0) {
 		printf("Error close file: %s\n", strerror(errno));
