@@ -42,12 +42,10 @@ int main(){
 	char in;
 	i = 0;
     while (read(fd, &in, sizeof(char)) > 0) {
-    	printf("%d %c\n",temp, in);
     	if('a' == in)
     		i++;
     }
 
-    printf("out : %d \n",temp);
 
     if( gettimeofday(&t2, NULL) < 0){
 		printf("Error getting time: %s\n", strerror(errno));
