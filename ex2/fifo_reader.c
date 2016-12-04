@@ -44,20 +44,29 @@ int main(){
 
 
 	i = 0;
-    while (1) {
-    	readlen = read(fd, in, READBYTE);
+//    while (1) {
+//    	readlen = read(fd, in, READBYTE);
+//    	printf("%d\n",readlen);
+//    	if( readlen < 0){
+//    		printf("Error reading fifo: %s\n", strerror(errno));
+//    		return -1;
+//    	}
+//    	for(j=0; j<readlen; j++){
+//    		if('a' == in[j]){
+//    			i++;
+//    		}
+//    	}
+//    	if (readlen < READBYTE) {
+//    		break;
+//    	}
+//    }
+
+    while (read(fd, in, READBYTE) > 0) {
     	printf("%d\n",readlen);
-    	if( readlen < 0){
-    		printf("Error reading fifo: %s\n", strerror(errno));
-    		return -1;
-    	}
     	for(j=0; j<readlen; j++){
     		if('a' == in[j]){
     			i++;
     		}
-    	}
-    	if (readlen < READBYTE) {
-    		break;
     	}
     }
 
