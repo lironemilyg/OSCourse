@@ -47,6 +47,10 @@ int main(){
     while (1) {
     	readlen = read(fd, in, READBYTE);
     	printf("%d\n",readlen);
+    	if( readlen < 0){
+    		printf("Error reading fifo: %s\n", strerror(errno));
+    		return -1;
+    	}
     	for(j=0; j<readlen; j++){
     		if('a' == in[j]){
     			i++;
