@@ -61,7 +61,7 @@ int main(){
 //    	}
 //    }
 
-    while (read(fd, in, READBYTE) > 0) {
+    while ( read(fd, in, READBYTE) > 0 ) {
     	printf("%d\n",readlen);
     	for(j=0; j<readlen; j++){
     		if('a' == in[j]){
