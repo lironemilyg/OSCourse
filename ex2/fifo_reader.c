@@ -21,7 +21,7 @@
 
 
 #define FILEPATH "/tmp/osfifo"
-#define READBYTE 4095000
+#define READBYTE 1024
 
 int main(){
 	char in[READBYTE];
