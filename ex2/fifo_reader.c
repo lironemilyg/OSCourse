@@ -46,6 +46,7 @@ int main(){
 	i = 0;
     while (1) {
     	readlen = read(fd, in, READBYTE);
+    	printf("%d\n",readlen);
     	for(j=0; j<readlen; j++){
     		if('a' == in[j]){
     			i++;
