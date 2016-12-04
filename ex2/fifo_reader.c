@@ -27,7 +27,7 @@ int main(){
 	char in[READBYTE];
 	int readlen,fd, i,j;
 	bool flag = true;
-	sleep(2);
+	sleep(15);
 	// Time measurement structures
 	struct timeval t1, t2;
 	double elapsed_microsec;
