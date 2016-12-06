@@ -31,7 +31,7 @@ int main(){
 	// Time measurement structures
 	struct timeval t1, t2;
 	double elapsed_microsec;
-    fd = open(FILEPATH, O_RDONLY | O_CREAT | O_TRUNC | O_NONBLOCK ,0644);
+    fd = open(FILEPATH, O_RDONLY | O_CREAT | O_TRUNC ,0644);
     if (fd < 0){
     	printf("Error opening file for reading: %s\n", strerror(errno));
     	return -1;
@@ -61,12 +61,21 @@ int main(){
 //    	}
 //    }
 
-    while ( (readlen = read(fd, in, READBYTE)) > 0 ) {
-    	printf("%d\n",readlen);
-    	for(j=0; j<readlen; j++){
-    		if('a' == in[j]){
+    while (flag == true)
+    {
+    	readlen = read(fd, in, READBYTE);
+    	if (readlen < 0)
+    	{
+    		printf("Error: read failed - errno %s\n", strerror(errno));
+    		return -1;
+    	}
+    	if (readlen < READBYTE)
+    		flag = false;
+
+    	for (int j = 0; j < readlen ; ++j)
+    	{
+    		if('a' == in[j])
     			i++;
-    		}
     	}
     }
 
