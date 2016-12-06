@@ -25,7 +25,7 @@
 
 int main(){
 	char in[READBYTE];
-	int readlen,fd, i,j;
+	int readlen,fd, i;
 	bool flag = true;
 	sleep(15);
 	// Time measurement structures
