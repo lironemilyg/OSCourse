@@ -25,7 +25,7 @@
 
 int main(){
 	char in[READBYTE];
-	int readlen,fd, i;
+	int readlen,fd, i, j;
 	bool flag = true;
 	sleep(15);
 	// Time measurement structures
@@ -72,7 +72,7 @@ int main(){
     	if (readlen < READBYTE)
     		flag = false;
 
-    	for (int j = 0; j < readlen ; ++j)
+    	for (j = 0; j < readlen ; ++j)
     	{
     		if('a' == in[j])
     			i++;
