@@ -16,6 +16,8 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <stdbool.h>
+
 
 #define FILEPATH "/tmp/mmapped.bin"
 
@@ -25,12 +27,13 @@ void my_signal_handler(int signum) {
 		int flag = 1;
 		struct stat s;
 		char* arr;
+		bool a_flag = true;
 		struct timeval t1, t2;
 		double elapsed_microsec;
 		fd = open(FILEPATH, O_RDWR | O_CREAT);
 		if (-1 == fd) {
 			printf("Error opening file for writing: %s\n", strerror(errno));
-			return;
+			exit(-1);
 		}
 
 		if (stat(FILEPATH, &s) < 0) {
@@ -44,7 +47,7 @@ void my_signal_handler(int signum) {
 		if (-1 == result) {
 			printf("Error calling lseek() to 'stretch' the file: %s\n",
 					strerror(errno));
-			return;
+			exit(-1);
 		}
 		//Now the file is ready to be mmapped.
 		arr = (char*) mmap(NULL, fileSize, PROT_READ | PROT_WRITE, MAP_SHARED,
@@ -52,30 +55,32 @@ void my_signal_handler(int signum) {
 
 		if (MAP_FAILED == arr) {
 			printf("Error mmapping the file: %s\n", strerror(errno));
-			return;
+			exit(-1);
 		}
-		int a_flag = 1;
-		i = 0;
+
+
 
 		if (gettimeofday(&t1, NULL) < 0) {
 			printf("Error getting time: %s\n", strerror(errno));
-			return;
+			exit(-1);
 		}
 
+		i = 0;
 		while (a_flag) {
 			if (arr[i] == '\0')
-				a_flag = 0;
-			i++;
+				a_flag = false;
+			if((arr[i] == '\0') || (arr[i] == 'a'))
+				i++;
 		}
 
 		if (gettimeofday(&t2, NULL) < 0) {
 			printf("Error getting time: %s\n", strerror(errno));
-			return;
+			exit(-1);
 		}
 
 		if (-1 == munmap(arr, fileSize)) {
 			printf("Error un-mmapping the file: %s\n", strerror(errno));
-			return;
+			exit(-1);
 		}
 
 		// Counting time elapsed
@@ -88,12 +93,12 @@ void my_signal_handler(int signum) {
 		// un-mmaping doesn't close the file, so we still need to do that.
 		if (close(fd)) {
 			printf("Error close file: %s\n", strerror(errno));
-			return;
+			exit(-1);
 		}
 		if (unlink(FILEPATH) < 0) {
 			printf("Error remove the file from the disk: %s\n",
 					strerror(errno));
-			return;
+			exit(-1);
 		}
 	}
 }

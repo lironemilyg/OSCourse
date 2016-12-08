@@ -120,11 +120,6 @@ int main() {
 		exit(-1);
 	}
 
-	if (unlink(FILEPATH) < 0) {
-		printf("Error remove the file from the disk: %s\n", strerror(errno));
-		exit(-1);
-	}
-
 	if (sigaction(SIGINT, &oldact, NULL) < 0) {
 		printf("Error restore sigaction SIGTERM: %s\n", strerror(errno));
 		exit(-1);
