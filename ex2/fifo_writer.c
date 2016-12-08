@@ -5,7 +5,6 @@
  *      Author: lirongazit
  */
 
-
 #include <sys/time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,16 +16,34 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <stdbool.h>
 
 #define FILEPATH "/tmp/osfifo"
+#define WRITEBYTE 1024
 
 int main(int argc, char* argv[]) {
-	int NUM, i;
-	int temp;
+	int NUM, i, writed, totalWrite;
 	// Time measurement structures
 	struct timeval t1, t2;
 	double elapsed_microsec;
-	char *arr;
+	struct stat s;
+	bool flag = true;
+	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
+	struct sigaction oldact;
+	struct sigaction act;
+
+	memset(&act, '\0', sizeof(act));
+
+	/* Use the sa_sigaction field because the handles has two additional parameters */
+	act.sa_handler = SIG_IGN;
+
+	/* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
+	act.sa_flags = SA_SIGINFO;
+
+	if (sigaction(SIGINT, &act, &oldact) < 0) {
+		printf("Error sigaction SIGTERM: %s\n", strerror(errno));
+		exit(-1);
+	}
 	if (argc == 2) {
 		NUM = atoi(argv[1]);
 	} else {
@@ -35,59 +52,78 @@ int main(int argc, char* argv[]) {
 	}
 
 	//taking from - http://stackoverflow.com/questions/2784500/how-to-send-a-simple-string-between-two-programs-using-pipes
-    int fd;
-    /* create the FIFO (named pipe) */
-    if (mkfifo(FILEPATH, 0600) < 0){
-    	printf("Error mkfifo file: %s\n", strerror(errno));
-    	return -1;
-    }
+	int fd;
 
-    fd = open(FILEPATH, O_RDWR | O_CREAT | O_TRUNC,0644);
-
-    if (fd < 0){
-    	printf("Error opening file for writing: %s\n", strerror(errno));
-    	return -1;
-    }
-
-	char* buff=(char*)malloc(sizeof(char)*NUM);
-	for (i = 0; i < NUM ; ++i) {
-		buff[i]='a';
+	if (stat(FILEPATH, &s) < 0) {
+		if (mkfifo(FILEPATH, 0600) < 0) {
+			if ( errno != 17) {
+				printf("Error mkfifo file: %s\n", strerror(errno));
+				exit(-1);
+			}
+		}
 	}
 
-	if( gettimeofday(&t1, NULL) < 0){
+	fd = open(FILEPATH, O_RDWR | O_CREAT | O_TRUNC, 0644);
+
+	if (fd < 0) {
+		printf("Error opening file for writing: %s\n", strerror(errno));
+		exit(-1);
+	}
+
+	char buff[WRITEBYTE];
+	for (i = 0; i < WRITEBYTE; ++i) {
+		buff[i] = 'a';
+	}
+
+	if (gettimeofday(&t1, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
-		return -1;
+		exit(-1);
 	}
 
-	temp = write(fd, buff, NUM);
-	if(  temp < 0){
-		printf("Error writing to file: %s\n", strerror(errno));
-		return -1;
+	totalWrite = 0;
+	while (flag) {
+		if ( WRITEBYTE <= NUM) {
+			writed = write(fd, buff, WRITEBYTE);
+		} else {
+			writed = write(fd, buff, NUM);
+		}
+
+		if (writed < 0) {
+			printf("Error writing to file: %s\n", strerror(errno));
+			exit(-1);
+		}
+		NUM = NUM - writed;
+		totalWrite += writed;
+		if (writed < WRITEBYTE) {
+			flag = false;
+		}
 	}
 
-	if( gettimeofday(&t2, NULL) < 0){
+	if (gettimeofday(&t2, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
-		return -1;
+		exit(-1);
 	}
 
-	free(buff);
-	sleep(10);
 	// Counting time elapsed
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
-	printf("%d were written in %f microseconds through FIFO\n", temp,elapsed_microsec);
+	printf("%d were written in %f microseconds through FIFO\n", totalWrite,
+			elapsed_microsec);
 
 	if (close(fd) < 0) {
 		printf("Error close file: %s\n", strerror(errno));
-		return -1;
+		exit(-1);
 	}
 
 	if (unlink(FILEPATH) < 0) {
-		printf("Error remove the file from the disk: %s\n",
-				strerror(errno));
-		return -1;
+		printf("Error remove the file from the disk: %s\n", strerror(errno));
+		exit(-1);
 	}
 
-    return 0;
+	if (sigaction(SIGINT, &oldact, NULL) < 0) {
+		printf("Error restore sigaction SIGTERM: %s\n", strerror(errno));
+		exit(-1);
+	}
+	exit(0);
 }

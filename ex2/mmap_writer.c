@@ -28,6 +28,24 @@ int main(int argc, char* argv[]) {
 	struct timeval t1, t2;
 	double elapsed_microsec;
 	char *arr;
+
+	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
+	struct sigaction oldact;
+	struct sigaction act;
+
+	memset(&act, '\0', sizeof(act));
+
+	/* Use the sa_sigaction field because the handles has two additional parameters */
+	act.sa_handler = SIG_IGN;
+
+	/* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
+	act.sa_flags = SA_SIGINFO;
+
+	if (sigaction(SIGTERM, &act, &oldact) < 0) {
+		printf("Error sigaction SIGTERM: %s\n", strerror(errno));
+		exit(-1);
+	}
+
 	if (argc == 3) {
 		NUM = atoi(argv[1]);
 		RPID = atoi(argv[2]);
@@ -41,20 +59,22 @@ int main(int argc, char* argv[]) {
 	fd = open(FILEPATH, O_RDWR | O_CREAT);
 	if (-1 == fd) {
 		printf("Error opening file for writing: %s\n", strerror(errno));
-		return -1;
+		exit(-1);
 	}
 	//taking from - http://stackoverflow.com/questions/4568681/using-chmod-in-a-c-program
 	char mode[] = "0600";
-	 i = strtol(mode, 0, 8);
+	i = strtol(mode, 0, 8);
 	if (chmod(FILEPATH, i) < 0) {
-		printf("error in chmod(%s, %s) - %d (%s)\n", FILEPATH, mode, errno, strerror(errno));
+		printf("error in chmod(%s, %s) - %d (%s)\n", FILEPATH, mode, errno,
+				strerror(errno));
 		return 1;
 	}
 	// Force the file to be of the NUM size as the (mmapped) array
-	result = lseek(fd, NUM-1, SEEK_SET);
+	result = lseek(fd, NUM - 1, SEEK_SET);
 	if (-1 == result) {
-		printf("Error calling lseek() to 'stretch' the file: %s\n", strerror(errno));
-		return -1;
+		printf("Error calling lseek() to 'stretch' the file: %s\n",
+				strerror(errno));
+		exit(-1);
 	}
 
 	// Something has to be written at the end of the file,
@@ -62,37 +82,36 @@ int main(int argc, char* argv[]) {
 	result = write(fd, "", 1);
 	if (1 != result) {
 		printf("Error writing last byte of the file: %s\n", strerror(errno));
-		return -1;
+		exit(-1);
 	}
 
 	//Now the file is ready to be mmapped.
-	arr = (char*) mmap(NULL,NUM, PROT_READ | PROT_WRITE,MAP_SHARED, fd, 0);
+	arr = (char*) mmap(NULL, NUM, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if (MAP_FAILED == arr) {
 		printf("Error mmapping the file: %s\n", strerror(errno));
-		return -1;
+		exit(-1);
 	}
 
-	if( gettimeofday(&t1, NULL) < 0){
+	if (gettimeofday(&t1, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
-		return -1;
+		exit(-1);
 	}
 
 	// now write to the file as if it were memory
-	for (i = 0; i < NUM -1; ++i) {
+	for (i = 0; i < NUM - 1; ++i) {
 		arr[i] = 'a';
 	}
-	arr[NUM-1]='\0';
+	arr[NUM - 1] = '\0';
 
-	if( gettimeofday(&t2, NULL) < 0){
+	if (gettimeofday(&t2, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
-		return -1;
+		exit(-1);
 	}
-
 
 	if (-1 == munmap(arr, NUM)) {
 		printf("Error un-mmapping the file: %s\n", strerror(errno));
-		return -1;
+		exit(-1);
 	}
 
 	// Counting time elapsed
@@ -102,13 +121,18 @@ int main(int argc, char* argv[]) {
 	//taking from - http://stackoverflow.com/questions/6168636/how-to-trigger-sigusr1-and-sigusr2
 	kill(RPID, SIGUSR1);
 	// Final report
-	printf("%d were written in %f microseconds through MMAP\n", NUM,elapsed_microsec);
+	printf("%d were written in %f microseconds through MMAP\n", NUM,
+			elapsed_microsec);
 	// un-mmaping doesn't close the file, so we still need to do that.
-	if (close(fd)){
+	if (close(fd)) {
 		printf("Error close file: %s\n", strerror(errno));
-		return -1;
+		exit(-1);
 	}
 
-	// Exit gracefully
-	return 0;
+	if (sigaction(SIGTERM, &oldact, NULL) < 0) {
+		printf("Error restore sigaction SIGTERM: %s\n", strerror(errno));
+		exit(-1);
+	}
+
+	exit(0);
 }

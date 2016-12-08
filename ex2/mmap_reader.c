@@ -105,14 +105,35 @@ int main() {
 	new_action.sa_handler = my_signal_handler;
 	// Remove any special flag
 	new_action.sa_flags = 0;
+	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
+	struct sigaction oldact;
+	struct sigaction act;
+
+	memset(&act, '\0', sizeof(act));
+
+	/* Use the sa_sigaction field because the handles has two additional parameters */
+	act.sa_handler = SIG_IGN;
+
+	/* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
+	act.sa_flags = SA_SIGINFO;
+
+	if (sigaction(SIGTERM, &act, &oldact) < 0) {
+		printf("Error sigaction SIGTERM: %s\n", strerror(errno));
+		exit(-1);
+	}
 	// Register the handler
 	if (0 != sigaction(SIGUSR1, &new_action, NULL)) {
 		printf("Signal handle registration failed. %s\n", strerror(errno));
-		return -1;
+		exit(-1);
 	}
 	while (1) {
 		sleep(2);
 	}
+
+	if (sigaction(SIGTERM, &oldact, NULL) < 0) {
+		printf("Error restore sigaction SIGTERM: %s\n", strerror(errno));
+		exit(-1);
+	}
 	// Exit gracefully
-	return 0;
+	exit(0);
 }
