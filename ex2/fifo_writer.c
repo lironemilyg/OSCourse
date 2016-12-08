@@ -18,7 +18,7 @@
 #include <signal.h>
 #include <stdbool.h>
 
-#define FILEPATH "/tmp/osfifo"
+#define FILEPATH "./osfifo"
 #define WRITEBYTE 1024
 
 int main(int argc, char* argv[]) {
