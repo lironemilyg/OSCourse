@@ -21,6 +21,26 @@
 #define FILEPATH "/tmp/osfifo"
 #define WRITEBYTE 1024
 
+int fd;
+
+//void my_signal_handler(int signum) {
+//	printf("%s\n", "lironnnnn");
+//	if (signum == SIGPIPE) {
+//		if (close(fd) < 0) {
+//			printf("Error close file: %s\n", strerror(errno));
+//			exit(-1);
+//		}
+//
+//		if (unlink(FILEPATH) < 0) {
+//			printf("Error remove the file from the disk: %s\n",
+//					strerror(errno));
+//			exit(-1);
+//		}
+//		exit(-1);
+//	}
+//
+//}
+
 int main(int argc, char* argv[]) {
 	int NUM, i, writed, totalWrite;
 	// Time measurement structures
@@ -28,7 +48,17 @@ int main(int argc, char* argv[]) {
 	double elapsed_microsec;
 	struct stat s;
 	bool flag = true;
-	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
+
+//	//HOLDING SIGPIPE
+//		struct sigaction new_action;
+//		new_action.sa_handler = my_signal_handler;
+//		new_action.sa_flags = SA_SIGINFO;
+//		if (0 != sigaction(SIGPIPE, &new_action, NULL)) {
+//			printf("Signal handle registration failed. %s\n", strerror(errno));
+//			exit(-1);
+//		}
+
+//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
 	struct sigaction oldact;
 	struct sigaction act;
 
@@ -52,8 +82,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	//taking from - http://stackoverflow.com/questions/2784500/how-to-send-a-simple-string-between-two-programs-using-pipes
-	int fd;
-
 	if (stat(FILEPATH, &s) < 0) {
 		if (mkfifo(FILEPATH, 0600) < 0) {
 			if ( errno != 17) {

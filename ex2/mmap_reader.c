@@ -19,7 +19,7 @@
 #include <stdbool.h>
 
 
-#define FILEPATH "./mmapped.bin"
+#define FILEPATH "/tmp/mmapped.bin"
 
 void my_signal_handler(int signum) {
 	if (signum == SIGUSR1) {

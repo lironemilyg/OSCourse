@@ -17,7 +17,7 @@
 #include <string.h>
 #include <signal.h>
 
-#define FILEPATH "./mmapped.bin"
+#define FILEPATH "/tmp/mmapped.bin"
 
 int main(int argc, char* argv[]) {
 	int NUM, RPID;

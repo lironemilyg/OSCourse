@@ -24,22 +24,6 @@
 
 int fd;
 
-void my_signal_handler(int signum) {
-	if (signum == SIGUSR1) {
-		if (close(fd) < 0) {
-			printf("Error close file: %s\n", strerror(errno));
-			exit(-1);
-		}
-
-		if (unlink(FILEPATH) < 0) {
-			printf("Error remove the file from the disk: %s\n",
-					strerror(errno));
-			exit(-1);
-		}
-	}
-
-}
-
 int main() {
 //	fd = 0;
 	char in[READBYTE];
