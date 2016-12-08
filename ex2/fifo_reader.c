@@ -19,7 +19,7 @@
 #include <signal.h>
 
 
-#define FILEPATH "./osfifo"
+#define FILEPATH "/tmp/osfifo"
 #define READBYTE 1024
 
 int fd;
