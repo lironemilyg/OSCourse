@@ -22,7 +22,7 @@
 #define FILEPATH "/tmp/osfifo"
 #define READBYTE 1024
 
-extern int fd = 0;
+extern int fd;
 
 void my_signal_handler(int signum) {
 	if (signum == SIGUSR1) {
