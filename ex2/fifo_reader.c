@@ -17,7 +17,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
-#include "global.h"
+
 
 #define FILEPATH "/tmp/osfifo"
 #define READBYTE 1024
@@ -41,6 +41,7 @@ void my_signal_handler(int signum) {
 }
 
 int main() {
+	fd = 0;
 	char in[READBYTE];
 	int readlen, i, j;
 
