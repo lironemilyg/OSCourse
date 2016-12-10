@@ -19,7 +19,7 @@
 #include <stdbool.h>
 
 
-#define FILEPATH "/tmp/mmapped.bin"
+#define FILEPATH "./mmapped.bin"
 
 struct sigaction oldact;
 
@@ -32,6 +32,7 @@ void my_signal_handler(int signum) {
 		bool a_flag = true;
 		struct timeval t1, t2;
 		double elapsed_microsec;
+
 		fd = open(FILEPATH, O_RDWR | O_CREAT);
 		if (-1 == fd) {
 			printf("Error opening file for writing: %s\n", strerror(errno));
@@ -117,16 +118,17 @@ int main() {
 	// Remove any special flag
 	new_action.sa_flags = 0;
 
+	//SIGTERM handler
 	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
 	struct sigaction act;
 	memset(&act, '\0', sizeof(act));
 	act.sa_handler = SIG_IGN;
 	act.sa_flags = 0;
-
 	if (sigaction(SIGTERM, &act, &oldact) < 0) {
 		printf("Error sigaction SIGTERM: %s\n", strerror(errno));
 		exit(-1);
 	}
+
 	// Register the handler
 	if (0 != sigaction(SIGUSR1, &new_action, NULL)) {
 		printf("Signal handle registration failed. %s\n", strerror(errno));

@@ -17,7 +17,7 @@
 #include <string.h>
 #include <signal.h>
 
-#define FILEPATH "/tmp/mmapped.bin"
+#define FILEPATH "./mmapped.bin"
 
 int main(int argc, char* argv[]) {
 	int NUM, RPID;
@@ -28,23 +28,6 @@ int main(int argc, char* argv[]) {
 	struct timeval t1, t2;
 	double elapsed_microsec;
 	char *arr;
-
-	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
-	struct sigaction oldact;
-	struct sigaction act;
-
-	memset(&act, '\0', sizeof(act));
-
-	/* Use the sa_sigaction field because the handles has two additional parameters */
-	act.sa_handler = SIG_IGN;
-
-	/* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
-	act.sa_flags = SA_SIGINFO;
-
-	if (sigaction(SIGTERM, &act, &oldact) < 0) {
-		printf("Error sigaction SIGTERM: %s\n", strerror(errno));
-		exit(-1);
-	}
 
 	if (argc == 3) {
 		NUM = atoi(argv[1]);
@@ -117,7 +100,6 @@ int main(int argc, char* argv[]) {
 	// Counting time elapsed
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
-
 	//taking from - http://stackoverflow.com/questions/6168636/how-to-trigger-sigusr1-and-sigusr2
 	kill(RPID, SIGUSR1);
 	// Final report
@@ -128,11 +110,5 @@ int main(int argc, char* argv[]) {
 		printf("Error close file: %s\n", strerror(errno));
 		exit(-1);
 	}
-
-	if (sigaction(SIGTERM, &oldact, NULL) < 0) {
-		printf("Error restore sigaction SIGTERM: %s\n", strerror(errno));
-		exit(-1);
-	}
-
 	exit(0);
 }

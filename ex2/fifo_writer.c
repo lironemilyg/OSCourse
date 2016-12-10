@@ -58,22 +58,18 @@ int main(int argc, char* argv[]) {
 //			exit(-1);
 //		}
 
-//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
+	//SIGINT handler
+	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
 	struct sigaction oldact;
 	struct sigaction act;
-
 	memset(&act, '\0', sizeof(act));
-
-	/* Use the sa_sigaction field because the handles has two additional parameters */
 	act.sa_handler = SIG_IGN;
-
-	/* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
-	act.sa_flags = SA_SIGINFO;
-
+	act.sa_flags = 0;
 	if (sigaction(SIGINT, &act, &oldact) < 0) {
-		printf("Error sigaction SIGTERM: %s\n", strerror(errno));
+		printf("Error sigaction SIGINT: %s\n", strerror(errno));
 		exit(-1);
 	}
+
 	if (argc == 2) {
 		NUM = atoi(argv[1]);
 	} else {
