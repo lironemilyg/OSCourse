@@ -17,7 +17,7 @@
 #include <string.h>
 #include <signal.h>
 
-#define FILEPATH "./mmapped.bin"
+#define FILEPATH "/tmp/mmapped.bin"
 
 int main(int argc, char* argv[]) {
 	int NUM, RPID;
@@ -28,6 +28,17 @@ int main(int argc, char* argv[]) {
 	struct timeval t1, t2;
 	double elapsed_microsec;
 	char *arr;
+	//SIGTERM handler
+	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
+	struct sigaction act;
+	struct sigaction oldact;
+	memset(&act, '\0', sizeof(act));
+	act.sa_handler = SIG_IGN;
+	act.sa_flags = 0;
+	if (sigaction(SIGTERM, &act, &oldact) < 0) {
+		printf("Error sigaction SIGTERM: %s\n", strerror(errno));
+		exit(-1);
+	}
 
 	if (argc == 3) {
 		NUM = atoi(argv[1]);
@@ -108,6 +119,10 @@ int main(int argc, char* argv[]) {
 	// un-mmaping doesn't close the file, so we still need to do that.
 	if (close(fd)) {
 		printf("Error close file: %s\n", strerror(errno));
+		exit(-1);
+	}
+	if (sigaction(SIGTERM, &oldact, NULL) < 0) {
+		printf("Error restore sigaction SIGTERM: %s\n", strerror(errno));
 		exit(-1);
 	}
 	exit(0);
