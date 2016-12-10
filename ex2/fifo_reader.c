@@ -37,19 +37,16 @@ int main() {
 	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
 	struct sigaction oldact;
 	struct sigaction act;
-
 	memset(&act, '\0', sizeof(act));
-
 	/* Use the sa_sigaction field because the handles has two additional parameters */
 	act.sa_handler = SIG_IGN;
-
 	/* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
-	act.sa_flags = SA_SIGINFO;
-
+	act.sa_flags = 0;
 	if (sigaction(SIGINT, &act, &oldact) < 0) {
-		printf("Error sigaction SIGTERM: %s\n", strerror(errno));
+		printf("Error sigaction SIGINT: %s\n", strerror(errno));
 		exit(-1);
 	}
+
 	if (stat(FILEPATH, &s) < 0) {
 		if (mkfifo(FILEPATH, 0600) < 0) {
 			if ( errno != 17) { //file exist

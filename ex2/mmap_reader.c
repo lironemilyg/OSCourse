@@ -21,6 +21,8 @@
 
 #define FILEPATH "/tmp/mmapped.bin"
 
+struct sigaction oldact;
+
 void my_signal_handler(int signum) {
 	if (signum == SIGUSR1) {
 		int fd, i, result, fileSize;
@@ -57,8 +59,6 @@ void my_signal_handler(int signum) {
 			printf("Error mmapping the file: %s\n", strerror(errno));
 			exit(-1);
 		}
-
-
 
 		if (gettimeofday(&t1, NULL) < 0) {
 			printf("Error getting time: %s\n", strerror(errno));
@@ -100,6 +100,12 @@ void my_signal_handler(int signum) {
 					strerror(errno));
 			exit(-1);
 		}
+		if (sigaction(SIGTERM, &oldact, NULL) < 0) {
+			printf("Error restore sigaction SIGTERM: %s\n", strerror(errno));
+			exit(-1);
+		}
+		// Exit gracefully
+		exit(0);
 	}
 }
 
@@ -110,17 +116,12 @@ int main() {
 	new_action.sa_handler = my_signal_handler;
 	// Remove any special flag
 	new_action.sa_flags = 0;
+
 	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
-	struct sigaction oldact;
 	struct sigaction act;
-
 	memset(&act, '\0', sizeof(act));
-
-	/* Use the sa_sigaction field because the handles has two additional parameters */
 	act.sa_handler = SIG_IGN;
-
-	/* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
-	act.sa_flags = SA_SIGINFO;
+	act.sa_flags = 0;
 
 	if (sigaction(SIGTERM, &act, &oldact) < 0) {
 		printf("Error sigaction SIGTERM: %s\n", strerror(errno));
@@ -135,10 +136,5 @@ int main() {
 		sleep(2);
 	}
 
-	if (sigaction(SIGTERM, &oldact, NULL) < 0) {
-		printf("Error restore sigaction SIGTERM: %s\n", strerror(errno));
-		exit(-1);
-	}
-	// Exit gracefully
-	exit(0);
+
 }
