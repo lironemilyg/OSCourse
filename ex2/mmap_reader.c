@@ -19,9 +19,11 @@
 #include <stdbool.h>
 
 
-#define FILEPATH "/tmp/mmapped.bin"
+#define FILEPATH "./mmapped.bin"
 
 struct sigaction oldact;
+
+void my_signal_handler(int signum);
 
 void my_signal_handler(int signum) {
 	if (signum == SIGUSR1) {

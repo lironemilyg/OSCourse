@@ -19,13 +19,11 @@
 #include <signal.h>
 
 
-#define FILEPATH "/tmp/osfifo"
+#define FILEPATH "./osfifo"
 #define READBYTE 1024
 
-int fd;
-
 int main() {
-//	fd = 0;
+	int fd;
 	char in[READBYTE];
 	int readlen, i, j;
 
@@ -56,7 +54,7 @@ int main() {
 		}
 	}
 
-	fd = open(FILEPATH, O_RDONLY | O_CREAT | O_TRUNC, 0644);
+	fd = open(FILEPATH , O_RDONLY);
 	if (fd < 0) {
 		printf("Error opening file for reading: %s\n", strerror(errno));
 		exit(-1);
@@ -77,7 +75,6 @@ int main() {
 		if (readlen < READBYTE) {
 			flag = false;
 		}
-
 		for (j = 0; j < readlen; ++j) {
 			if ('a' == in[j])
 				i++;
@@ -102,7 +99,7 @@ int main() {
 	}
 
 	if (sigaction(SIGINT, &oldact, NULL) < 0) {
-		printf("Error restore sigaction SIGTERM: %s\n", strerror(errno));
+		printf("Error restore sigaction SIGINT: %s\n", strerror(errno));
 		exit(-1);
 	}
 	exit(0);
