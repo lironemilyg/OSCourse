@@ -17,17 +17,20 @@
 #include <string.h>
 #include <signal.h>
 
-#define FILEPATH "./mmapped.bin"
+#define FILEPATH "/tmp/mmapped.bin"
+#define PERMI 0600
 
 int main(int argc, char* argv[]) {
 	int NUM, RPID;
 	int i;
 	int fd;
+	int modelo;
 	int result;
 	// Time measurement structures
 	struct timeval t1, t2;
 	double elapsed_microsec;
 	char *arr;
+
 	//SIGTERM handler
 	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
 	struct sigaction act;
@@ -50,15 +53,15 @@ int main(int argc, char* argv[]) {
 	// open a file for writing.
 	// Note: read/write mode needs to match
 	// the required access in mmap (not intuitive)
-	fd = open(FILEPATH, O_RDWR | O_CREAT);
+	fd = open(FILEPATH, O_RDWR | O_CREAT , PERMI);
 	if (-1 == fd) {
 		printf("Error opening file for writing: %s\n", strerror(errno));
 		exit(-1);
 	}
 	//taking from - http://stackoverflow.com/questions/4568681/using-chmod-in-a-c-program
 	char mode[] = "0600";
-	i = strtol(mode, 0, 8);
-	if (chmod(FILEPATH, i) < 0) {
+	modelo = strtol(mode, 0, 8);
+	if (chmod(FILEPATH, (mode_t) modelo) < 0) {
 		printf("error in chmod(%s, %s) - %d (%s)\n", FILEPATH, mode, errno,
 				strerror(errno));
 		return 1;
@@ -80,7 +83,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	//Now the file is ready to be mmapped.
-	arr = (char*) mmap(NULL, NUM, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	arr = (char*) mmap(NULL, (size_t) NUM, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if (MAP_FAILED == arr) {
 		printf("Error mmapping the file: %s\n", strerror(errno));
@@ -103,7 +106,7 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
-	if (-1 == munmap(arr, NUM)) {
+	if (-1 == munmap(arr, (size_t) NUM)) {
 		printf("Error un-mmapping the file: %s\n", strerror(errno));
 		exit(-1);
 	}

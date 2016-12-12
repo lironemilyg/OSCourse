@@ -62,9 +62,9 @@ int main(int argc, char* argv[]) {
 		exit(-1); // ERROR
 	}
 
-	srcMap = (char*) mmap(NULL, fileSize, PROT_READ | PROT_WRITE, MAP_SHARED,
+	srcMap = (char*) mmap(NULL, (size_t) fileSize, PROT_READ | PROT_WRITE, MAP_SHARED,
 			srcfd, 0);
-	dstMap = (char*) mmap(NULL, fileSize, PROT_READ | PROT_WRITE, MAP_SHARED,
+	dstMap = (char*) mmap(NULL, (size_t) fileSize, PROT_READ | PROT_WRITE, MAP_SHARED,
 			destfd, 0);
 
 	if (MAP_FAILED == srcMap) {
@@ -77,9 +77,9 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 	//assist in - https://www.tutorialspoint.com/c_standard_library/c_function_memcpy.htm
-	if (memcpy(dstMap, srcMap, fileSize) == NULL) {
+	if (memcpy(dstMap, srcMap, (size_t) fileSize) == NULL) {
 		printf("Error memcpy to the dst file: %s\n", strerror(errno));
-		if (-1 == munmap(srcMap, fileSize)) {
+		if (-1 == munmap(srcMap, (size_t) fileSize)) {
 			printf("Error un-mmapping the src file: %s\n", strerror(errno));
 			if (close(srcfd)) {
 				printf("Error close src file: %s\n", strerror(errno));
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
 			exit(-1);
 		}
 
-		if (-1 == munmap(dstMap, fileSize)) {
+		if (-1 == munmap(dstMap, (size_t) fileSize)) {
 			printf("Error un-mmapping the dst file: %s\n", strerror(errno));
 			if (close(srcfd)) {
 				printf("Error close src file: %s\n", strerror(errno));
@@ -118,7 +118,7 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
-	if (-1 == munmap(srcMap, fileSize)) {
+	if (-1 == munmap(srcMap, (size_t) fileSize)) {
 		printf("Error un-mmapping the src file: %s\n", strerror(errno));
 		if (close(srcfd)) {
 			printf("Error close src file: %s\n", strerror(errno));
@@ -132,7 +132,7 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
-	if (-1 == munmap(dstMap, fileSize)) {
+	if (-1 == munmap(dstMap, (size_t) fileSize)) {
 		printf("Error un-mmapping the dst file: %s\n", strerror(errno));
 		if (close(srcfd)) {
 			printf("Error close src file: %s\n", strerror(errno));
@@ -148,7 +148,7 @@ int main(int argc, char* argv[]) {
 
 	char mode[] = "0777";
 	int i = strtol(mode, 0, 8);
-	if (chmod(destFile, i) < 0) {
+	if (chmod(destFile,(mode_t) i) < 0) {
 		printf("error in chmod(%s, %s) - %d (%s)\n", destFile, mode, errno,
 				strerror(errno));
 		return 1;

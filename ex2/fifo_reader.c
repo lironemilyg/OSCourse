@@ -19,7 +19,7 @@
 #include <signal.h>
 
 
-#define FILEPATH "./osfifo"
+#define FILEPATH "/tmp/osfifo"
 #define READBYTE 1024
 
 int main() {
@@ -32,13 +32,12 @@ int main() {
 	struct timeval t1, t2;
 	double elapsed_microsec;
 	struct stat s;
-	//taking from - https://www.linuxprogrammingblog.com/code-examples/sigaction
+
+	//SIGINT Handler
 	struct sigaction oldact;
 	struct sigaction act;
 	memset(&act, '\0', sizeof(act));
-	/* Use the sa_sigaction field because the handles has two additional parameters */
 	act.sa_handler = SIG_IGN;
-	/* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
 	act.sa_flags = 0;
 	if (sigaction(SIGINT, &act, &oldact) < 0) {
 		printf("Error sigaction SIGINT: %s\n", strerror(errno));
@@ -46,12 +45,7 @@ int main() {
 	}
 
 	if (stat(FILEPATH, &s) < 0) {
-		if (mkfifo(FILEPATH, 0600) < 0) {
-			if ( errno != 17) { //file exist
-				printf("Error mkfifo file: %s\n", strerror(errno));
-				exit(-1);
-			}
-		}
+		sleep(3);
 	}
 
 	fd = open(FILEPATH , O_RDONLY);

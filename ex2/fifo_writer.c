@@ -18,7 +18,7 @@
 #include <signal.h>
 #include <stdbool.h>
 
-#define FILEPATH "./osfifo"
+#define FILEPATH "/tmp/osfifo"
 #define WRITEBYTE 1024
 
 int fd;
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
 		NUM = atoi(argv[1]);
 	} else {
 		puts("invalid number of arguments");
-		return 1; //exit(1)
+		exit(-1); //exit(1)
 	}
 
 	//taking from - http://stackoverflow.com/questions/2784500/how-to-send-a-simple-string-between-two-programs-using-pipes
@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
 		if ( WRITEBYTE <= NUM) {
 			writed = write(fd, buff, WRITEBYTE);
 		} else {
-			writed = write(fd, buff, NUM);
+			writed = write(fd, buff, (size_t) NUM);
 		}
 
 		if (writed < 0) {

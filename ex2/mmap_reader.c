@@ -19,7 +19,7 @@
 #include <stdbool.h>
 
 
-#define FILEPATH "./mmapped.bin"
+#define FILEPATH "/tmp/mmapped.bin"
 
 struct sigaction oldact;
 
@@ -55,7 +55,7 @@ void my_signal_handler(int signum) {
 			exit(-1);
 		}
 		//Now the file is ready to be mmapped.
-		arr = (char*) mmap(NULL, fileSize, PROT_READ | PROT_WRITE, MAP_SHARED,
+		arr = (char*) mmap(NULL, (size_t) fileSize, PROT_READ | PROT_WRITE, MAP_SHARED,
 				fd, 0);
 
 		if (MAP_FAILED == arr) {
@@ -81,7 +81,7 @@ void my_signal_handler(int signum) {
 			exit(-1);
 		}
 
-		if (-1 == munmap(arr, fileSize)) {
+		if (-1 == munmap(arr, (size_t) fileSize)) {
 			printf("Error un-mmapping the file: %s\n", strerror(errno));
 			exit(-1);
 		}
