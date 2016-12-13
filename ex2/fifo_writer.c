@@ -21,12 +21,30 @@
 #define FILEPATH "/tmp/osfifo"
 #define WRITEBYTE 1024
 
-int fd;
+int fd, totalWrite;
+// Time measurement structures
+struct timeval t1, t2;
+bool timeFlag = false;
+double elapsed_microsec;
 
 void my_signal_handler(int signum);
 
 void my_signal_handler(int signum) {
 	if (signum == SIGPIPE) {
+		if (!timeFlag) {
+			elapsed_microsec = 0.0;
+		} else {
+			if (gettimeofday(&t2, NULL) < 0) {
+				printf("Error getting time: %s\n", strerror(errno));
+				exit(-1);
+			}
+			// Counting time elapsed
+			elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
+			elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
+		}
+		printf("%d were written in %f microseconds through FIFO\n", totalWrite,
+				elapsed_microsec);
+
 		if (close(fd) < 0) {
 			printf("Error close file: %s\n", strerror(errno));
 			exit(-1);
@@ -43,10 +61,7 @@ void my_signal_handler(int signum) {
 }
 
 int main(int argc, char* argv[]) {
-	int NUM, i, writed, totalWrite;
-	// Time measurement structures
-	struct timeval t1, t2;
-	double elapsed_microsec;
+	int NUM, i, writed;
 	struct stat s;
 	bool flag = true;
 
@@ -103,6 +118,8 @@ int main(int argc, char* argv[]) {
 	if (gettimeofday(&t1, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
 		exit(-1);
+	} else {
+		timeFlag = true;
 	}
 
 	totalWrite = 0;

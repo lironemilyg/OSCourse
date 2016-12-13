@@ -73,6 +73,7 @@ int main() {
 			if ('a' == in[j])
 				i++;
 		}
+		close(fd);
 	}
 
 	if (gettimeofday(&t2, NULL) < 0) {
