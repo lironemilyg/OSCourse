@@ -27,11 +27,10 @@ void my_signal_handler(int signum);
 
 void my_signal_handler(int signum) {
 	if (signum == SIGUSR1) {
-		int fd, i, result, fileSize;
+		int fd, i,j, result, fileSize;
 		int flag = 1;
 		struct stat s;
 		char* arr;
-		bool a_flag = true;
 		struct timeval t1, t2;
 		double elapsed_microsec;
 
@@ -69,11 +68,16 @@ void my_signal_handler(int signum) {
 		}
 
 		i = 0;
-		while (a_flag) {
-			if (arr[i] == '\0')
-				a_flag = false;
+		for (j=0 ; j < fileSize-1 ; j++) {
 			if((arr[i] == '\0') || (arr[i] == 'a'))
 				i++;
+			if (arr[i] == '\0')
+				break;
+		}
+
+		if( arr[fileSize -1] != '\0' ){
+			printf("Error getting eof without \0: %s\n");
+			exit(-1);
 		}
 
 		if (gettimeofday(&t2, NULL) < 0) {

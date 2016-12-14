@@ -44,8 +44,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (argc == 3) {
-		NUM = atoi(argv[1]);
-		RPID = atoi(argv[2]);
+		NUM = strtol(argv[1],NULL,10);
+		RPID = strtol(argv[2],NULL,10);
 	} else {
 		puts("invalid number of arguments");
 		return 1; //exit(1)

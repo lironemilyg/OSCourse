@@ -44,6 +44,7 @@ void my_signal_handler(int signum) {
 		}
 		printf("%d were written in %f microseconds through FIFO\n", totalWrite,
 				elapsed_microsec);
+		printf("SIGPIPE occurred through FIFO\n");
 
 		if (close(fd) < 0) {
 			printf("Error close file: %s\n", strerror(errno));
@@ -87,7 +88,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (argc == 2) {
-		NUM = atoi(argv[1]);
+		NUM = strtol(argv[1],NULL,10);
 	} else {
 		puts("invalid number of arguments");
 		exit(-1); //exit(1)
