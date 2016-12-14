@@ -32,6 +32,7 @@ void my_signal_handler(int signum) {
 		struct stat s;
 		char* arr;
 		struct timeval t1, t2;
+		bool errFlag = false;
 		double elapsed_microsec;
 
 		fd = open(FILEPATH, O_RDWR | O_CREAT);
@@ -75,12 +76,12 @@ void my_signal_handler(int signum) {
 				break;
 		}
 
-		if( (arr[fileSize -1] != '\0') || (j != fileSize-1) ){
-			printf("Error getting eof without end of string\n");
-			exit(-1);
-		}
-		else if( (arr[fileSize -1] == '\0') && (j == fileSize-1) ){
+		if( (arr[fileSize -1] == '\0') && (j == fileSize-1) ){
 			a_count++;
+		}
+		else{
+			errFlag = true;
+			printf("Error getting eof without end of string\n");
 		}
 
 		if (gettimeofday(&t2, NULL) < 0) {
@@ -100,6 +101,10 @@ void my_signal_handler(int signum) {
 		// Final report
 		printf("%d were read in %f microseconds through MMAP\n", a_count,
 				elapsed_microsec);
+
+		if(errFlag)
+			exit(-1);
+
 		// un-mmaping doesn't close the file, so we still need to do that.
 		if (close(fd)) {
 			printf("Error close file: %s\n", strerror(errno));
