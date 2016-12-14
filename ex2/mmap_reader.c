@@ -79,6 +79,9 @@ void my_signal_handler(int signum) {
 			printf("Error getting eof without end of string\n");
 			exit(-1);
 		}
+		else{
+			i++;
+		}
 
 		if (gettimeofday(&t2, NULL) < 0) {
 			printf("Error getting time: %s\n", strerror(errno));
