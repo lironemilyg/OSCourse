@@ -27,7 +27,7 @@ void my_signal_handler(int signum);
 
 void my_signal_handler(int signum) {
 	if (signum == SIGUSR1) {
-		int fd, i,j, result, fileSize;
+		int fd, a_count,j, result, fileSize;
 		int flag = 1;
 		struct stat s;
 		char* arr;
@@ -67,20 +67,20 @@ void my_signal_handler(int signum) {
 			exit(-1);
 		}
 
-		i = 0;
+		a_count = 0;
 		for (j=0 ; j < fileSize-1 ; j++) {
-			if((arr[i] == '\0') || (arr[i] == 'a'))
-				i++;
-			if (arr[i] == '\0')
+			if((arr[j] == '\0') || (arr[j] == 'a'))
+				a_count++;
+			if (arr[j] == '\0')
 				break;
 		}
 
-		if( arr[fileSize -1] != '\0' ){
+		if( (arr[fileSize -1] != '\0') && (j == fileSize-1) ){
 			printf("Error getting eof without end of string\n");
 			exit(-1);
 		}
-		else{
-			i++;
+		else if( (arr[fileSize -1] == '\0') && (j == fileSize-1) ){
+			a_count++;
 		}
 
 		if (gettimeofday(&t2, NULL) < 0) {
@@ -98,7 +98,7 @@ void my_signal_handler(int signum) {
 		elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
 		// Final report
-		printf("%d were read in %f microseconds through MMAP\n", i,
+		printf("%d were read in %f microseconds through MMAP\n", a_count,
 				elapsed_microsec);
 		// un-mmaping doesn't close the file, so we still need to do that.
 		if (close(fd)) {
