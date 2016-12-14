@@ -75,7 +75,7 @@ void my_signal_handler(int signum) {
 				break;
 		}
 
-		if( (arr[fileSize -1] != '\0') && (j == fileSize-1) ){
+		if( (arr[fileSize -1] != '\0') || (j != fileSize-1) ){
 			printf("Error getting eof without end of string\n");
 			exit(-1);
 		}
