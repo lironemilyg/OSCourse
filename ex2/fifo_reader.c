@@ -31,7 +31,6 @@ int main() {
 	// Time measurement structures
 	struct timeval t1, t2;
 	double elapsed_microsec;
-	struct stat s;
 
 	//SIGINT Handler
 	struct sigaction oldact;
@@ -43,10 +42,7 @@ int main() {
 		printf("Error sigaction SIGINT: %s\n", strerror(errno));
 		exit(errno);
 	}
-
-	if (stat(FILEPATH, &s) < 0) {
-		sleep(5);
-	}
+	sleep(5);
 
 	fd = open(FILEPATH , O_RDONLY);
 	if (fd < 0) {
