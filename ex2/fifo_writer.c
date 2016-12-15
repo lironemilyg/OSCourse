@@ -170,7 +170,7 @@ int main(int argc, char* argv[]) {
 
 	printf("%d were written in %f microseconds through FIFO\n", totalWrite,
 			elapsed_microsec);
-	sleep(5);
+	sleep(2);
 	if (close(fd) < 0) {
 		printf("Error close file: %s\n", strerror(errno));
 		exit(errno);
