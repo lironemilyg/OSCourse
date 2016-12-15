@@ -42,7 +42,7 @@ int main() {
 		printf("Error sigaction SIGINT: %s\n", strerror(errno));
 		exit(errno);
 	}
-	sleep(2);
+	sleep(5);
 
 	fd = open(FILEPATH , O_RDONLY);
 	if (fd < 0) {
