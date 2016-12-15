@@ -41,22 +41,22 @@ int main() {
 	act.sa_flags = 0;
 	if (sigaction(SIGINT, &act, &oldact) < 0) {
 		printf("Error sigaction SIGINT: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	if (stat(FILEPATH, &s) < 0) {
-		sleep(3);
+		sleep(5);
 	}
 
 	fd = open(FILEPATH , O_RDONLY);
 	if (fd < 0) {
 		printf("Error opening file for reading: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	if (gettimeofday(&t1, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	i = 0;
@@ -64,7 +64,7 @@ int main() {
 		readlen = read(fd, in, READBYTE);
 		if (readlen < 0) {
 			printf("Error: read failed - errno %s\n", strerror(errno));
-			exit(-1);
+			exit(errno);
 		}
 		if (readlen < READBYTE) {
 			flag = false;
@@ -77,7 +77,7 @@ int main() {
 
 	if (gettimeofday(&t2, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	// Counting time elapsed
@@ -89,12 +89,12 @@ int main() {
 
 	if (close(fd) < 0) {
 		printf("Error close file: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	if (sigaction(SIGINT, &oldact, NULL) < 0) {
 		printf("Error restore sigaction SIGINT: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 	exit(0);
 }

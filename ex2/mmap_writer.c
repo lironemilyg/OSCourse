@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
 	act.sa_flags = 0;
 	if (sigaction(SIGTERM, &act, &oldact) < 0) {
 		printf("Error sigaction SIGTERM: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	if (argc == 3) {
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
 		RPID = strtol(argv[2],NULL,10);
 	} else {
 		puts("invalid number of arguments");
-		return 1; //exit(1)
+		exit(-1); //exit(-1)
 	}
 	// open a file for writing.
 	// Note: read/write mode needs to match
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 	fd = open(FILEPATH, O_RDWR | O_CREAT , PERMI);
 	if (-1 == fd) {
 		printf("Error opening file for writing: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 	//taking from - http://stackoverflow.com/questions/4568681/using-chmod-in-a-c-program
 	char mode[] = "0600";
@@ -64,14 +64,14 @@ int main(int argc, char* argv[]) {
 	if (chmod(FILEPATH, (mode_t) modelo) < 0) {
 		printf("error in chmod(%s, %s) - %d (%s)\n", FILEPATH, mode, errno,
 				strerror(errno));
-		return 1;
+		exit(errno);
 	}
 	// Force the file to be of the NUM size as the (mmapped) array
 	result = lseek(fd, NUM - 1, SEEK_SET);
 	if (-1 == result) {
 		printf("Error calling lseek() to 'stretch' the file: %s\n",
 				strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	// Something has to be written at the end of the file,
@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
 	result = write(fd, "", 1);
 	if (1 != result) {
 		printf("Error writing last byte of the file: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	//Now the file is ready to be mmapped.
@@ -87,12 +87,12 @@ int main(int argc, char* argv[]) {
 
 	if (MAP_FAILED == arr) {
 		printf("Error mmapping the file: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	if (gettimeofday(&t1, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	// now write to the file as if it were memory
@@ -103,12 +103,12 @@ int main(int argc, char* argv[]) {
 
 	if (gettimeofday(&t2, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	if (-1 == munmap(arr, (size_t) NUM)) {
 		printf("Error un-mmapping the file: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	// Counting time elapsed
@@ -122,11 +122,11 @@ int main(int argc, char* argv[]) {
 	// un-mmaping doesn't close the file, so we still need to do that.
 	if (close(fd)) {
 		printf("Error close file: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 	if (sigaction(SIGTERM, &oldact, NULL) < 0) {
 		printf("Error restore sigaction SIGTERM: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 	exit(0);
 }
