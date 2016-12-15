@@ -100,9 +100,9 @@ int main(int argc, char* argv[]) {
 	}
 
 	//taking from - http://stackoverflow.com/questions/2784500/how-to-send-a-simple-string-between-two-programs-using-pipes
+	//taking fron hw 1
 	ret = stat(FILEPATH, &s);
 	if (ret < 0) {
-		printf("file exist: %s\n", strerror(errno));
 		// failed but error isn't ENOENT - something went wrong
 		if (errno != ENOENT) {
 			printf("error with stat() exist file: %s\n", strerror(errno));
