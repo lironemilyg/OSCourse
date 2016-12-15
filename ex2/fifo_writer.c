@@ -19,7 +19,7 @@
 #include <stdbool.h>
 
 #define FILEPATH "/tmp/osfifo"
-#define WRITEBYTE 1024
+#define WRITEBYTE 4096
 
 int fd, totalWrite;
 // Time measurement structures
@@ -36,7 +36,7 @@ void my_signal_handler(int signum) {
 		} else {
 			if (gettimeofday(&t2, NULL) < 0) {
 				printf("Error getting time: %s\n", strerror(errno));
-				exit(-1);
+				exit(errno);
 			}
 			// Counting time elapsed
 			elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
@@ -48,13 +48,13 @@ void my_signal_handler(int signum) {
 
 		if (close(fd) < 0) {
 			printf("Error close file: %s\n", strerror(errno));
-			exit(-1);
+			exit(errno);
 		}
 
 		if (unlink(FILEPATH) < 0) {
 			printf("Error remove the file from the disk: %s\n",
 					strerror(errno));
-			exit(-1);
+			exit(errno);
 		}
 		exit(-1);
 	}
@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 	new_action.sa_flags = 0;
 	if (0 != sigaction(SIGPIPE, &new_action, NULL)) {
 		printf("Signal handle registration failed. %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 
 	}
 
@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
 	act.sa_flags = 0;
 	if (sigaction(SIGINT, &act, &oldact) < 0) {
 		printf("Error sigaction SIGINT: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	if (argc == 2) {
@@ -106,16 +106,16 @@ int main(int argc, char* argv[]) {
 		// failed but error isn't ENOENT - something went wrong
 		if (errno != ENOENT) {
 			printf("error with stat() exist file: %s\n", strerror(errno));
-			return -1;
+			exit(-1);
 		}
 		if (mkfifo(FILEPATH, 0600) < 0) { // error is ENOENT - path doesn't exist
 			printf("Error mkfifo file: %s\n", strerror(errno));
-			exit(-1);
+			exit(errno);
 		}
 	} else {
 		if (chmod(FILEPATH, 0600) < 0) {
 			printf("Error chmod in exist mkfifo file: %s\n", strerror(errno));
-			exit(-1);
+			exit(errno);
 		}
 	}
 
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
 
 	if (fd < 0) {
 		printf("Error opening file for writing: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 
 	}
 
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 
 	if (gettimeofday(&t1, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	} else {
 		timeFlag = true;
 	}
@@ -148,7 +148,7 @@ int main(int argc, char* argv[]) {
 		}
 		if (writed < 0) {
 			printf("Error writing to file: %s\n", strerror(errno));
-			exit(-1);
+			exit(errno);
 		}
 		NUM = NUM - writed;
 		totalWrite += writed;
@@ -159,7 +159,7 @@ int main(int argc, char* argv[]) {
 
 	if (gettimeofday(&t2, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 // Counting time elapsed
@@ -173,17 +173,17 @@ int main(int argc, char* argv[]) {
 
 	if (close(fd) < 0) {
 		printf("Error close file: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	if (unlink(FILEPATH) < 0) {
 		printf("Error remove the file from the disk: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 
 	if (sigaction(SIGINT, &oldact, NULL) < 0) {
 		printf("Error restore sigaction SIGINT: %s\n", strerror(errno));
-		exit(-1);
+		exit(errno);
 	}
 	exit(0);
 }
