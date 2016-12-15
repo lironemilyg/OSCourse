@@ -109,14 +109,9 @@ int main(int argc, char* argv[]) {
 			printf("error with stat() exist file: %s\n", strerror(errno));
 			return -1;
 		}
-		// error is ENOENT - path doesn't exist
-		else {
-			// try to create output dir, exit if failed for any reason
-			// give 0777 permissions - number starts with 0 for base 8!
-			if (mkfifo(FILEPATH, 0600) < 0) {
-				printf("Error mkfifo file: %s\n", strerror(errno));
-				exit(errno);
-			}
+		if (mkfifo(FILEPATH, 0600) < 0) { // error is ENOENT - path doesn't exist
+			printf("Error mkfifo file: %s\n", strerror(errno));
+			exit(errno);
 		}
 	} else {
 		if (chmod(FILEPATH, 0600) < 0) {
@@ -170,7 +165,7 @@ int main(int argc, char* argv[]) {
 		exit(errno);
 	}
 
-	// Counting time elapsed
+// Counting time elapsed
 	elapsed_microsec = (t2.tv_sec - t1.tv_sec) * 1000.0;
 	elapsed_microsec += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
