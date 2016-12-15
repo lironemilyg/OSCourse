@@ -44,8 +44,12 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (argc == 3) {
-		NUM = strtol(argv[1],NULL,10);
-		RPID = strtol(argv[2],NULL,10);
+		NUM = strtol(argv[1], NULL, 10);
+		RPID = strtol(argv[2], NULL, 10);
+		if (NUM < 0 || RPID < 0) {
+			printf("negative arg - invalid arguments\n");
+			exit(-1); //exit(-1)
+		}
 	} else {
 		puts("invalid number of arguments");
 		exit(-1); //exit(-1)
@@ -53,7 +57,7 @@ int main(int argc, char* argv[]) {
 	// open a file for writing.
 	// Note: read/write mode needs to match
 	// the required access in mmap (not intuitive)
-	fd = open(FILEPATH, O_RDWR | O_CREAT , PERMI);
+	fd = open(FILEPATH, O_RDWR | O_CREAT, PERMI);
 	if (-1 == fd) {
 		printf("Error opening file for writing: %s\n", strerror(errno));
 		exit(errno);
@@ -83,7 +87,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	//Now the file is ready to be mmapped.
-	arr = (char*) mmap(NULL, (size_t) NUM, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	arr = (char*) mmap(NULL, (size_t) NUM, PROT_READ | PROT_WRITE, MAP_SHARED,
+			fd, 0);
 
 	if (MAP_FAILED == arr) {
 		printf("Error mmapping the file: %s\n", strerror(errno));

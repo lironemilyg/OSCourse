@@ -62,7 +62,7 @@ void my_signal_handler(int signum) {
 }
 
 int main(int argc, char* argv[]) {
-	int NUM, i, writed;
+	int NUM, i, ret, writed;
 	struct stat s;
 	bool flag = true;
 
@@ -90,16 +90,33 @@ int main(int argc, char* argv[]) {
 
 	if (argc == 2) {
 		NUM = strtol(argv[1], NULL, 10);
+		if (NUM < 0) {
+			printf("negative arg - invalid arguments\n");
+			exit(-1); //exit(-1)
+		}
 	} else {
-		puts("invalid number of arguments");
+		printf("invalid number of arguments\n");
 		exit(-1); //exit(-1)
 	}
 
 	//taking from - http://stackoverflow.com/questions/2784500/how-to-send-a-simple-string-between-two-programs-using-pipes
-	if (stat(FILEPATH, &s) < 0) {
-		if (mkfifo(FILEPATH, 0600) < 0) {
-			printf("Error mkfifo file: %s\n", strerror(errno));
-			exit(errno);
+	ret = stat(argv[3], &s);
+
+	// make sure we succeeded (i.e., dir exists)
+	if (ret < 0) {
+		// failed but error isn't ENOENT - something went wrong
+		if (errno != ENOENT) {
+			printf("error with stat() exist file: %s\n", strerror(errno));
+			return -1;
+		}
+		// error is ENOENT - path doesn't exist
+		else {
+			// try to create output dir, exit if failed for any reason
+			// give 0777 permissions - number starts with 0 for base 8!
+			if (mkfifo(FILEPATH, 0600) < 0) {
+				printf("Error mkfifo file: %s\n", strerror(errno));
+				exit(errno);
+			}
 		}
 	} else {
 		if (chmod(FILEPATH, 0600) < 0) {
