@@ -100,8 +100,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	//taking from - http://stackoverflow.com/questions/2784500/how-to-send-a-simple-string-between-two-programs-using-pipes
-	ret = stat(argv[3], &s);
-
+	ret = stat(FILEPATH, &s);
 	if (ret < 0) {
 		printf("file exist: %s\n", strerror(errno));
 		// failed but error isn't ENOENT - something went wrong
