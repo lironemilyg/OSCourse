@@ -49,13 +49,13 @@ int main() {
 		printf("Error opening file for reading: %s\n", strerror(errno));
 		exit(errno);
 	}
+	i = 0;
 
 	if (gettimeofday(&t1, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
 		exit(errno);
 	}
 
-	i = 0;
 	while (flag == true) {
 		readlen = read(fd, in, READBYTE);
 		if (readlen < 0) {

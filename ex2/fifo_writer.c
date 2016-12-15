@@ -135,7 +135,6 @@ int main(int argc, char* argv[]) {
 	if (gettimeofday(&t1, NULL) < 0) {
 		printf("Error getting time: %s\n", strerror(errno));
 		exit(errno);
-
 	} else {
 		timeFlag = true;
 	}
@@ -147,7 +146,6 @@ int main(int argc, char* argv[]) {
 		} else {
 			writed = write(fd, buff, (size_t) NUM);
 		}
-
 		if (writed < 0) {
 			printf("Error writing to file: %s\n", strerror(errno));
 			exit(errno);
