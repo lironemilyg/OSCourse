@@ -99,25 +99,30 @@ int main(int argc, char* argv[]) {
 		exit(-1); //exit(-1)
 	}
 
+
+	if (mkfifo(FILEPATH, 0600) < 0) { // error is ENOENT - path doesn't exist
+		printf("Error mkfifo file: %s\n", strerror(errno));
+		exit(errno);
+	}
 	//taking from - http://stackoverflow.com/questions/2784500/how-to-send-a-simple-string-between-two-programs-using-pipes
 	//taking fron hw 1
-	ret = stat(FILEPATH, &s);
-	if (ret < 0) {
-		// failed but error isn't ENOENT - something went wrong
-		if (errno != ENOENT) {
-			printf("error with stat() exist file: %s\n", strerror(errno));
-			return -1;
-		}
-		if (mkfifo(FILEPATH, 0600) < 0) { // error is ENOENT - path doesn't exist
-			printf("Error mkfifo file: %s\n", strerror(errno));
-			exit(errno);
-		}
-	} else {
-		if (chmod(FILEPATH, 0600) < 0) {
-			printf("Error chmod in exist mkfifo file: %s\n", strerror(errno));
-			exit(errno);
-		}
-	}
+//	ret = stat(FILEPATH, &s);
+//	if (ret < 0) {
+//		// failed but error isn't ENOENT - something went wrong
+//		if (errno != ENOENT) {
+//			printf("error with stat() exist file: %s\n", strerror(errno));
+//			return -1;
+//		}
+//		if (mkfifo(FILEPATH, 0600) < 0) { // error is ENOENT - path doesn't exist
+//			printf("Error mkfifo file: %s\n", strerror(errno));
+//			exit(errno);
+//		}
+//	} else {
+//		if (chmod(FILEPATH, 0600) < 0) {
+//			printf("Error chmod in exist mkfifo file: %s\n", strerror(errno));
+//			exit(errno);
+//		}
+//	}
 
 	fd = open(FILEPATH, O_WRONLY | O_CREAT, 0600);
 
