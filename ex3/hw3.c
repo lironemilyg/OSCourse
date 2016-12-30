@@ -49,6 +49,7 @@ void intlist_destroy(intlist* list){
 void intlist_push_head(intlist* list, int value){
 	Node* newNode = (Node*) malloc(sizeof(*newNode));
 	newNode->prev = NULL;
+	newNode->data = value;
 	if(list->head == NULL && list->tail == NULL){
 		list->tail = newNode;
 		newNode->next = NULL;
@@ -70,25 +71,19 @@ void intlist_remove_last_k(intlist* list, int k){
 	if(k > list->size){
 		k = list->size;
 		temp = list->head;
+		list->head = NULL;
+		list->tail = NULL;
 	}
-//	if(k <= list->size - k){
 	else {
 		temp = list->tail;
 		while (k > 1) {
 			temp = temp->prev;
 			--k;
 		}
+		list->tail = temp->prev;
+		list->tail->next = NULL;
 	}
-//	}
-//	else{
-//		temp = list->head;
-//		int size = list->size - k;
-//		while(size > 0){
-//			temp = temp->next;
-//			--size;
-//		}
-//	}
-	temp->prev->next = NULL;
+	printf("temp data is = %d \n",temp->data);
 	temp->prev = NULL;
 	list->size = list->size - k;
 	nodeList_destroy(temp);
@@ -98,10 +93,12 @@ int intlist_pop_tail(intlist* list){
 	Node* temp;
 	int val;
 	temp = list->tail;
+	list->tail = list->tail->prev;
 	temp->prev->next = NULL;
 	temp->prev = NULL;
 	--list->size;
 	val = temp->data;
+	printf("data is %d",val);
 	nodeList_destroy(temp);
 	return val;
 }
@@ -124,6 +121,19 @@ void printList(Node* head) {
 	}
 }
 
+void printListRev(Node* tail) {
+	Node* current = tail;
+	while (current != NULL) {
+		printf("%d", current->data);
+		if (!current->prev) {
+			putchar('\n');
+		} else {
+			putchar(' ');
+		}
+		current = current->prev;
+	}
+}
+
 int main() {
 	intlist* list = (intlist*) malloc(sizeof(*list));;
 	intlist_init(list);
@@ -135,11 +145,15 @@ int main() {
 	intlist_push_head(list,3);
 	intlist_push_head(list,2);
 	intlist_push_head(list,1);
-	printf("size is = %d \n",intlist_size(list));
+//	printf("size is = %d \n",intlist_size(list));
 	printList(list->head);
-//	intlist_remove_last_k(list,3);
-//	int res = intlist_pop_tail(list);
-//	printf("res pop need to be 4 - result = %d \n",res);
-//	intlist_destroy(list);
-	printf("Finishing...........\n");
+	intlist_remove_last_k(list,3);
+	printList(list->head);
+//	printListRev(list->tail);
+	int res = intlist_pop_tail(list);
+	printf("res pop need to be 5 - result = %d \n",res);
+	printList(list->head);
+
+	intlist_destroy(list);
+	printf("\nFinishing...........\n");
 }
