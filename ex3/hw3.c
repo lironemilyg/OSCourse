@@ -49,8 +49,15 @@ void intlist_destroy(intlist* list){
 void intlist_push_head(intlist* list, int value){
 	Node* newNode = (Node*) malloc(sizeof(*newNode));
 	newNode->prev = NULL;
-	newNode->next = list->head;
-	list->head = newNode->next;
+	if(list->head == NULL && list->tail == NULL){
+		list->tail = newNode;
+		newNode->next = NULL;
+	}
+	else{
+		newNode->next = list->head;
+		list->head->prev = newNode;
+	}
+	list->head = newNode;
 	++list->size;
 }
 
@@ -60,21 +67,27 @@ int intlist_size(intlist* list){
 
 void intlist_remove_last_k(intlist* list, int k){
 	Node* temp;
-	if(k <= list->size - k){
+	if(k > list->size){
+		k = list->size;
+		temp = list->head;
+	}
+//	if(k <= list->size - k){
+	else {
 		temp = list->tail;
-		while(k > 1){
+		while (k > 1) {
 			temp = temp->prev;
 			--k;
 		}
 	}
-	else{
-		temp = list->head;
-		int size = list->size - k;
-		while(size > 0){
-			temp = temp->next;
-			--size;
-		}
-	}
+//	}
+//	else{
+//		temp = list->head;
+//		int size = list->size - k;
+//		while(size > 0){
+//			temp = temp->next;
+//			--size;
+//		}
+//	}
 	temp->prev->next = NULL;
 	temp->prev = NULL;
 	list->size = list->size - k;
@@ -98,14 +111,19 @@ pthread_mutex_t* intlist_get_mutex(intlist* list){
 }
 
 int main() {
-	int arr[] = {1,2,3,4,5,6};
-	Node* head = createFromArray(arr,6);
-	printList(head);
-	head = reverseList(head);
-	printList(head);
-	destroyList(head);
-	return 0;
+	intlist* list = (intlist*) malloc(sizeof(*list));;
+	intlist_init(list);
+	intlist_push_head(list,8);
+	intlist_push_head(list,7);
+	intlist_push_head(list,6);
+	intlist_push_head(list,5);
+	intlist_push_head(list,4);
+	intlist_push_head(list,3);
+	intlist_push_head(list,2);
+	intlist_push_head(list,1);
+	intlist_remove_last_k(list,3);
+	int res = intlist_pop_tail(list);
+	printf("res pop need to be 4 - result = %d \n",res);
+	intlist_destroy(list);
+	printf("Finishing...........\n");
 }
-
-
-
