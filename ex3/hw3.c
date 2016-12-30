@@ -110,6 +110,20 @@ pthread_mutex_t* intlist_get_mutex(intlist* list){
 	return &list->lock;
 }
 
+
+void printList(Node* head) {
+	Node* current = head;
+	while (current != NULL) {
+		printf("%d", current->data);
+		if (!current->next) {
+			putchar('\n');
+		} else {
+			putchar(' ');
+		}
+		current = current->next;
+	}
+}
+
 int main() {
 	intlist* list = (intlist*) malloc(sizeof(*list));;
 	intlist_init(list);
@@ -121,9 +135,11 @@ int main() {
 	intlist_push_head(list,3);
 	intlist_push_head(list,2);
 	intlist_push_head(list,1);
+	printf("size is = %d \n",intlist_size(list));
+	printList(list->head);
 //	intlist_remove_last_k(list,3);
-	int res = intlist_pop_tail(list);
-	printf("res pop need to be 4 - result = %d \n",res);
+//	int res = intlist_pop_tail(list);
+//	printf("res pop need to be 4 - result = %d \n",res);
 //	intlist_destroy(list);
 	printf("Finishing...........\n");
 }
