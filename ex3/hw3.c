@@ -60,6 +60,7 @@ void intlist_push_head(intlist* list, int value){
 	}
 	list->head = newNode;
 	++list->size;
+
 }
 
 int intlist_size(intlist* list){
