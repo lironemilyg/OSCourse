@@ -121,9 +121,9 @@ int main() {
 	intlist_push_head(list,3);
 	intlist_push_head(list,2);
 	intlist_push_head(list,1);
-	intlist_remove_last_k(list,3);
+//	intlist_remove_last_k(list,3);
 	int res = intlist_pop_tail(list);
 	printf("res pop need to be 4 - result = %d \n",res);
-	intlist_destroy(list);
+//	intlist_destroy(list);
 	printf("Finishing...........\n");
 }
