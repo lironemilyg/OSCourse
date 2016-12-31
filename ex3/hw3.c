@@ -153,7 +153,7 @@ int intlist_pop_tail(intlist* list) {
 		list->tail = NULL;
 		list->head = NULL;
 	}
-	list->size--;
+	--list->size;
 	if (pthread_mutex_unlock(&list->lock) != 0) {
 		perror("mutex unlock failed\n");
 		exit(-1);
@@ -367,12 +367,12 @@ int main(int argc, char* argv[]) {
 	fflush(NULL);
 	printf("size is: %d\n", size);
 
-	size =1;
+	size =1; //breakpoint
 	printf("breakPoint: before print %d\n", 8);
 //	while (size > 0) {
-//		t = intlist_pop_tail(list);
-//		fflush(NULL);
-//		printf("%d", t);
+		t = intlist_pop_tail(list);
+		fflush(NULL);
+		printf("%d", t);
 //		if (size == 1) {
 //			putchar('\n');
 //		} else {
@@ -390,6 +390,6 @@ int main(int argc, char* argv[]) {
 		perror("mutexattr destroy failed\n");
 		exit(-1);
 	}
-	//intlist_destroy(list);
+	intlist_destroy(list);
 	pthread_exit(NULL);
 }
