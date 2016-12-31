@@ -111,6 +111,7 @@ void intlist_remove_last_k(intlist* list, int k) {
 	}
 	if (k > list->size) {
 		k = list->size;
+		kBuckup = k;
 		temp = list->head;
 		list->head = NULL;
 		list->tail = NULL;
@@ -136,8 +137,8 @@ int intlist_pop_tail(intlist* list) {
 	Node* temp;
 	int val;
 	if (pthread_mutex_lock(&list->lock) != 0) {
-				perror("mutex lock failed\n");
-				exit(-1);
+		perror("mutex lock failed\n");
+		exit(-1);
 	}
 	while (1 > list->size) {
 		pthread_cond_wait(&pop_cond, &list->lock);
