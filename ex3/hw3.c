@@ -367,7 +367,7 @@ int main(int argc, char* argv[]) {
 	fflush(NULL);
 	printf("size is: %d\n", size);
 
-	size =1; //breakpoint
+	//size =1; //breakpoint
 	printf("breakPoint: before print %d\n", 8);
 	while (size > 0) {
 		t = intlist_pop_tail(list);
