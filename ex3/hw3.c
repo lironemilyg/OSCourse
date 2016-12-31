@@ -334,33 +334,33 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
-//	for (t = 0; t < wnum; t++) {
-//		rc = pthread_join(writer_thread[t], &status);
-//		if (rc) {
-//			printf("ERROR in pthread_join(): %s\n", strerror(rc));
-//			exit(-1);
-//		}
-//		printf("breakPoint: w -after join %d\n", t);
-//	}
-//
-//	for (t = 0; t < rnum; t++) {
-//		rc = pthread_join(reader_thread[t], &status);
-//		if (rc) {
-//			printf("ERROR in pthread_join(): %s\n", strerror(rc));
-//			exit(-1);
-//		}
-//		printf("breakPoint: r -after join %d\n", t);
-//
-//	}
-//
-//	printf("breakPoint: write and read -after join %d\n", 8);
-//
-//	rc = pthread_join(gc_thread[0], &status);
-//	if (rc) {
-//		printf("ERROR in pthread_join(): %s\n", strerror(rc));
-//		exit(-1);
-//	}
-//	printf("breakPoint: GC -after join %d\n", 8);
+	for (t = 0; t < wnum; t++) {
+		rc = pthread_join(writer_thread[t], &status);
+		if (rc) {
+			printf("ERROR in pthread_join(): %s\n", strerror(rc));
+			exit(-1);
+		}
+		printf("breakPoint: w -after join %d\n", t);
+	}
+
+	for (t = 0; t < rnum; t++) {
+		rc = pthread_join(reader_thread[t], &status);
+		if (rc) {
+			printf("ERROR in pthread_join(): %s\n", strerror(rc));
+			exit(-1);
+		}
+		printf("breakPoint: r -after join %d\n", t);
+
+	}
+
+	printf("breakPoint: write and read -after join %d\n", 8);
+
+	rc = pthread_join(gc_thread[0], &status);
+	if (rc) {
+		printf("ERROR in pthread_join(): %s\n", strerror(rc));
+		exit(-1);
+	}
+	printf("breakPoint: GC -after join %d\n", 8);
 
 	//print list
 	int size = intlist_size(list);
