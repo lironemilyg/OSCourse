@@ -144,8 +144,8 @@ int intlist_pop_tail(intlist* list) {
 	}
 //	printf("breakPoint: pop excuted %d\n", list->size);
 	temp = list->tail;
-	list->tail = list->tail->prev;
 	if(temp->prev != NULL){
+		list->tail = list->tail->prev;
 		temp->prev->next = NULL;
 		temp->prev = NULL;
 	}
