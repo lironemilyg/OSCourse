@@ -390,6 +390,6 @@ int main(int argc, char* argv[]) {
 		perror("mutexattr destroy failed\n");
 		exit(-1);
 	}
-	intlist_destroy(list);
+	//intlist_destroy(list);
 	pthread_exit(NULL);
 }
