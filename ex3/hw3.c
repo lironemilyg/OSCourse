@@ -143,7 +143,6 @@ int intlist_pop_tail(intlist* list) {
 	while (1 > list->size) {
 		pthread_cond_wait(&pop_cond, &list->lock);
 	}
-//	printf("breakPoint: pop excuted %d\n", list->size);
 	temp = list->tail;
 	if(temp->prev != NULL){
 		list->tail = list->tail->prev;
@@ -215,6 +214,7 @@ void *garbage_collector_func(void *t) {
 			printf("GC – %d items removed from the list\n", half);
 		}
 	}
+	printf("breakPoint: write -Flag false %d\n", 11);
 	pthread_exit((void*) t);
 }
 
@@ -244,7 +244,6 @@ void *reader_func(void *t) {
 		r = intlist_pop_tail(list);
 	}
 	printf("breakPoint: read -Flag false %d\n", 10);
-
 	pthread_exit((void*) t);
 }
 
