@@ -190,7 +190,6 @@ pthread_mutex_t* intlist_get_mutex(intlist* list) {
 //}
 
 void *garbage_collector_func(void *t) {
-	printf("breakPoint: GC- thread create %d\n", 1);
 	int max = (int) t;
 	int size, half;
 	while (flag) {
@@ -206,7 +205,6 @@ void *garbage_collector_func(void *t) {
 		if (size >= max) {
 			half = (int) size / 2;
 			intlist_remove_last_k(list, half);
-			printf("breakPoint: size after gc %d\n", list->size);
 		}
 		if (pthread_mutex_unlock(&list->lock) != 0) {
 			perror("mutex unlock failed\n");
@@ -216,19 +214,16 @@ void *garbage_collector_func(void *t) {
 			printf("GC – %d items removed from the list\n", half);
 		}
 	}
-	printf("breakPoint: GC -Flag false %d\n", 8);
 	pthread_exit((void*) t);
 }
 
 void *writer_func(void *t) {
-	printf("breakPoint: Writer Thread create %d\n", 2);
 	int max = (int) t;
 	int r;
 	while (flag) {
 		srand(time(NULL));
 		r = rand();
 		if (intlist_size(list) >= max) {
-			printf("breakPoint: Writer send signal %d\n", 4);
 			if (pthread_cond_signal(&garbage_collector_cond) != 0) {
 				perror("gc_cond signal failed\n");
 				exit(-1);
@@ -363,7 +358,7 @@ int main(int argc, char* argv[]) {
 	//print list
 	int size = intlist_size(list);
 	fflush(NULL);
-	printf("size is: %d", size);
+	printf("size is: %d\n", size);
 
 	size =1;
 	printf("breakPoint: before print %d\n", 8);
