@@ -289,58 +289,59 @@ int main(int argc, char* argv[]) {
 			exit(-1);
 		}
 	}
-
-	//Creating RNUM threads for the readers.
-	for (t = 0; t < wnum; t++) {
-		rc = pthread_create(&reader_thread[t], NULL, reader_func, (void *) t);
-		if (rc) {
-			printf("ERROR in pthread_create(): %s\n", strerror(rc));
-			exit(-1);
-		}
-	}
-
-	//Sleep for TIME seconds.
-	sleep(time);
-
-	//Stop all running threads
-	flag = false;
-	for (t = 0; t < wnum; t++) {
-		rc = pthread_join(writer_thread[t], &status);
-		if (rc) {
-			printf("ERROR in pthread_join(): %s\n", strerror(rc));
-			exit(-1);
-		}
-	}
-
-	for (t = 0; t < wnum; t++) {
-		rc = pthread_join(reader_thread[t], &status);
-		if (rc) {
-			printf("ERROR in pthread_join(): %s\n", strerror(rc));
-			exit(-1);
-		}
-	}
-
-	//print list
-	printf("size is: %d", intlist_size(list));
-	while (intlist_size(list) > 0) {
-		t = intlist_pop_tail(list);
-		printf("%d", t);
-		if (intlist_size(list) == 0) {
-			putchar('\n');
-		} else {
-			putchar(' ');
-		}
-	}
-
-	if (pthread_cond_destroy(&garbage_collector_cond) != 0) {
-		perror("garbage_collector_cond destroy failed\n");
-		exit(-1);
-	}
-
-	if (pthread_mutexattr_destroy(&attr) != 0) {
-		perror("mutexattr destroy failed\n");
-		exit(-1);
-	}
-	intlist_destroy(list);
+//
+//	//Creating RNUM threads for the readers.
+//	for (t = 0; t < wnum; t++) {
+//		rc = pthread_create(&reader_thread[t], NULL, reader_func, (void *) t);
+//		if (rc) {
+//			printf("ERROR in pthread_create(): %s\n", strerror(rc));
+//			exit(-1);
+//		}
+//	}
+//
+//	//Sleep for TIME seconds.
+//	sleep(time);
+//
+//	//Stop all running threads
+//	flag = false;
+//	for (t = 0; t < wnum; t++) {
+//		rc = pthread_join(writer_thread[t], &status);
+//		if (rc) {
+//			printf("ERROR in pthread_join(): %s\n", strerror(rc));
+//			exit(-1);
+//		}
+//	}
+//
+//	for (t = 0; t < wnum; t++) {
+//		rc = pthread_join(reader_thread[t], &status);
+//		if (rc) {
+//			printf("ERROR in pthread_join(): %s\n", strerror(rc));
+//			exit(-1);
+//		}
+//	}
+//
+//	//print list
+//	printf("size is: %d", intlist_size(list));
+//	while (intlist_size(list) > 0) {
+//		t = intlist_pop_tail(list);
+//		printf("%d", t);
+//		if (intlist_size(list) == 0) {
+//			putchar('\n');
+//		} else {
+//			putchar(' ');
+//		}
+//	}
+//
+//	if (pthread_cond_destroy(&garbage_collector_cond) != 0) {
+//		perror("garbage_collector_cond destroy failed\n");
+//		exit(-1);
+//	}
+//
+//	if (pthread_mutexattr_destroy(&attr) != 0) {
+//		perror("mutexattr destroy failed\n");
+//		exit(-1);
+//	}
+//	intlist_destroy(list);
+	free(list);
 	pthread_exit(NULL);
 }
