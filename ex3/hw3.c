@@ -60,15 +60,15 @@ void intlist_destroy(intlist* list) {
 		return;
 	}
 	nodeList_destroy(list->head);
-//
-//	if (pthread_mutex_destroy(&list->lock) != 0) {
-//		perror("mutex destroy failed\n");
-//		exit(-1);
-//	}
-//		if (pthread_cond_destroy(&pop_cond) != 0) {
-//			perror("cond destroy failed\n");
-//			exit(-1);
-//		}
+
+	if (pthread_mutex_destroy(&list->lock) != 0) {
+		perror("mutex destroy failed\n");
+		exit(-1);
+	}
+		if (pthread_cond_destroy(&pop_cond) != 0) {
+			perror("cond destroy failed\n");
+			exit(-1);
+		}
 	free(list);
 }
 
@@ -391,9 +391,6 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
-//	printf("breakPoint: try lock %d\n", 8);
-
-	//printf("breakPoint: after lock %d\n", 8);
 	intlist_destroy(list);
 	if (pthread_mutexattr_destroy(&attr) != 0) {
 			perror("mutexattr destroy failed\n");
