@@ -225,6 +225,7 @@ void *writer_func(void *t) {
 		srand(time(NULL));
 		r = rand();
 		if (intlist_size(list) >= max) {
+			printf("breakPoint: write send signal %d\n", 4);
 			if (pthread_cond_signal(&garbage_collector_cond) != 0) {
 				perror("gc_cond signal failed\n");
 				exit(-1);
@@ -349,6 +350,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	printf("breakPoint: write and read -after join %d\n", 8);
+
 	rc = pthread_join(gc_thread[0], &status);
 	if (rc) {
 		printf("ERROR in pthread_join(): %s\n", strerror(rc));
