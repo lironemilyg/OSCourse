@@ -93,7 +93,7 @@ void intlist_push_head(intlist* list, int value) {
 		exit(-1);
 	}
 	if (pthread_mutex_unlock(&list->lock) != 0) {
-		perror("mutex lock failed\n");
+		perror("mutex unlock failed\n");
 		exit(-1);
 	}
 }
@@ -125,7 +125,7 @@ void intlist_remove_last_k(intlist* list, int k) {
 	temp->prev = NULL;
 	list->size = list->size - k;
 	if (pthread_mutex_unlock(&list->lock) != 0) {
-		perror("mutex lock failed\n");
+		perror("mutex unlock failed\n");
 		exit(-1);
 	}
 	nodeList_destroy(temp);
@@ -143,7 +143,7 @@ int intlist_pop_tail(intlist* list) {
 	temp->prev = NULL;
 	--list->size;
 	if (pthread_mutex_unlock(&list->lock) != 0) {
-		perror("mutex lock failed\n");
+		perror("mutex unlock failed\n");
 		exit(-1);
 	}
 	val = temp->data;
@@ -182,33 +182,40 @@ pthread_mutex_t* intlist_get_mutex(intlist* list) {
 //}
 
 void *garbage_collector_func(void *t) {
+	printf("breakPoint: GC- thread create %d\n", 1);
 	int max = (int) t;
 	int size, half;
 	while (flag) {
+		if (pthread_mutex_lock(&list->lock) != 0) {
+			perror("mutex lock failed\n");
+			exit(-1);
+		}
 		pthread_cond_wait(&garbage_collector_cond, &list->lock);
 		size = intlist_size(list);
-		if (size <= max) {
+		if (size >= max) {
 			half = (int) size / 2;
 			intlist_remove_last_k(list, half);
 		}
 		if (pthread_mutex_unlock(&list->lock) != 0) {
-			perror("mutex lock failed\n");
+			perror("mutex unlock failed\n");
 			exit(-1);
 		}
-		if (size <= max) {
-			printf("GC – %d items removed from the list", half);
+		if (size >= max) {
+			printf("GC – %d items removed from the list\n", half);
 		}
 	}
 	pthread_exit((void*) t);
 }
 
 void *writer_func(void *t) {
+	printf("breakPoint: Writer Thread create %d\n", 2);
 	int max = (int) t;
 	int r;
 	while (flag) {
 		srand(time(NULL));
 		r = rand();
-		if (intlist_size(list) <= max) {
+		if (intlist_size(list) >= max) {
+			printf("breakPoint: Writer send signal %d\n", 4);
 			if (pthread_cond_signal(&garbage_collector_cond) != 0) {
 				perror("gc_cond signal failed\n");
 				exit(-1);
@@ -221,6 +228,7 @@ void *writer_func(void *t) {
 
 void *reader_func(void *t) {
 	int r;
+	printf("breakPoint: Reader Thread create %d\n", 3);
 	while (flag) {
 		r = intlist_pop_tail(list);
 	}
@@ -258,7 +266,7 @@ int main(int argc, char* argv[]) {
 	flag = true;
 	pthread_t writer_thread[wnum];
 	pthread_t reader_thread[rnum];
-	pthread_t gc_thread;
+	pthread_t gc_thread[1];
 	//starting flow
 	//initialization a global doubly-linked list of integers.
 	list = (intlist*) malloc(sizeof(*list));
@@ -278,70 +286,76 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
+	long lmax = (long) max;
 	//Creating a thread for the garbage collector
-	pthread_create(&gc_thread, NULL, garbage_collector_func, (void *) max);
+	pthread_create(&gc_thread[0], NULL, garbage_collector_func, (void *) lmax);
 
 	//Creating WNUM threads for the writers.
 	for (t = 0; t < wnum; t++) {
-		rc = pthread_create(&writer_thread[t], NULL, writer_func, (void *) t);
+		rc = pthread_create(&writer_thread[t], NULL, writer_func, (void *) lmax);
 		if (rc) {
 			printf("ERROR in pthread_create(): %s\n", strerror(rc));
 			exit(-1);
 		}
 	}
-//
-//	//Creating RNUM threads for the readers.
-//	for (t = 0; t < wnum; t++) {
-//		rc = pthread_create(&reader_thread[t], NULL, reader_func, (void *) t);
-//		if (rc) {
-//			printf("ERROR in pthread_create(): %s\n", strerror(rc));
-//			exit(-1);
-//		}
-//	}
-//
-//	//Sleep for TIME seconds.
-//	sleep(time);
-//
-//	//Stop all running threads
-//	flag = false;
-//	for (t = 0; t < wnum; t++) {
-//		rc = pthread_join(writer_thread[t], &status);
-//		if (rc) {
-//			printf("ERROR in pthread_join(): %s\n", strerror(rc));
-//			exit(-1);
-//		}
-//	}
-//
-//	for (t = 0; t < wnum; t++) {
-//		rc = pthread_join(reader_thread[t], &status);
-//		if (rc) {
-//			printf("ERROR in pthread_join(): %s\n", strerror(rc));
-//			exit(-1);
-//		}
-//	}
-//
-//	//print list
-//	printf("size is: %d", intlist_size(list));
-//	while (intlist_size(list) > 0) {
-//		t = intlist_pop_tail(list);
-//		printf("%d", t);
-//		if (intlist_size(list) == 0) {
-//			putchar('\n');
-//		} else {
-//			putchar(' ');
-//		}
-//	}
-//
-//	if (pthread_cond_destroy(&garbage_collector_cond) != 0) {
-//		perror("garbage_collector_cond destroy failed\n");
-//		exit(-1);
-//	}
-//
-//	if (pthread_mutexattr_destroy(&attr) != 0) {
-//		perror("mutexattr destroy failed\n");
-//		exit(-1);
-//	}
-//	intlist_destroy(list);
+
+	//Creating RNUM threads for the readers.
+	for (t = 0; t < rnum; t++) {
+		rc = pthread_create(&reader_thread[t], NULL, reader_func, (void *) lmax);
+		if (rc) {
+			printf("ERROR in pthread_create(): %s\n", strerror(rc));
+			exit(-1);
+		}
+	}
+
+	//Sleep for TIME seconds.
+	sleep(time);
+
+	//Stop all running threads
+	flag = false;
+	rc = pthread_join(gc_thread[0], &status);
+	if (rc) {
+		printf("ERROR in pthread_join(): %s\n", strerror(rc));
+		exit(-1);
+	}
+	for (t = 0; t < wnum; t++) {
+		rc = pthread_join(writer_thread[t], &status);
+		if (rc) {
+			printf("ERROR in pthread_join(): %s\n", strerror(rc));
+			exit(-1);
+		}
+	}
+
+	for (t = 0; t < rnum; t++) {
+		rc = pthread_join(reader_thread[t], &status);
+		if (rc) {
+			printf("ERROR in pthread_join(): %s\n", strerror(rc));
+			exit(-1);
+		}
+	}
+
+	//print list
+	printf("size is: %d", intlist_size(list));
+	while (intlist_size(list) > 0) {
+		t = intlist_pop_tail(list);
+		printf("%d", t);
+		if (intlist_size(list) == 0) {
+			putchar('\n');
+		} else {
+			putchar(' ');
+		}
+	}
+
+	if (pthread_cond_destroy(&garbage_collector_cond) != 0) {
+		perror("garbage_collector_cond destroy failed\n");
+		exit(-1);
+	}
+
+	if (pthread_mutexattr_destroy(&attr) != 0) {
+		perror("mutexattr destroy failed\n");
+		exit(-1);
+	}
+	intlist_destroy(list);
 	free(list);
 	pthread_exit(NULL);
 }
