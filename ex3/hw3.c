@@ -335,18 +335,11 @@ int main(int argc, char* argv[]) {
 	sleep(time);
 
 	//Stop all running threads
-//	flag = false;
-//	if (pthread_cond_signal(&garbage_collector_cond) != 0) {
-//		perror("gc_cond signal failed\n");
-//		exit(-1);
-//	}
+		if (pthread_cancel(gc_thread[0]) != 0) {
+			perror("gc pthread_cancel failed\n");
+			exit(-1);
+		}
 
-//		if (pthread_cancel(&garbage_collector_cond) != 0) {
-//			perror("gc_cond signal failed\n");
-//			exit(-1);
-//		}
-//	int pthread_cancel(
-//	pthread_t th);
 
 	for (t = 0; t < rnum; t++) {
 		rc = pthread_cancel(reader_thread[t]);
@@ -355,7 +348,6 @@ int main(int argc, char* argv[]) {
 			exit(-1);
 		}
 		printf("breakPoint: r -after pthread_cancel %d\n", t);
-
 	}
 
 	for (t = 0; t < wnum; t++) {
