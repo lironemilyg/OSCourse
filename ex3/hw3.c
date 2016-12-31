@@ -204,6 +204,11 @@ void *garbage_collector_func(void *t) {
 		}
 		pthread_cond_wait(&garbage_collector_cond, &list->lock);
 		if(flag == false){
+
+			if (pthread_mutex_unlock(&list->lock) != 0) {
+						perror("mutex unlock failed\n");
+						exit(-1);
+					}
 			break;
 		}
 		size = intlist_size(list);
@@ -386,6 +391,9 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
+//	printf("breakPoint: try lock %d\n", 8);
+
+	//printf("breakPoint: after lock %d\n", 8);
 	intlist_destroy(list);
 	if (pthread_mutexattr_destroy(&attr) != 0) {
 			perror("mutexattr destroy failed\n");
