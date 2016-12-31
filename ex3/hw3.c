@@ -369,17 +369,17 @@ int main(int argc, char* argv[]) {
 
 	size =1; //breakpoint
 	printf("breakPoint: before print %d\n", 8);
-//	while (size > 0) {
+	while (size > 0) {
 		t = intlist_pop_tail(list);
 		fflush(NULL);
 		printf("%d", t);
-//		if (size == 1) {
-//			putchar('\n');
-//		} else {
-//			putchar(' ');
-//		}
-//		--size;
-//	}
+		if (size == 1) {
+			putchar('\n');
+		} else {
+			putchar(' ');
+		}
+		--size;
+	}
 
 	if (pthread_cond_destroy(&garbage_collector_cond) != 0) {
 		perror("garbage_collector_cond destroy failed\n");
