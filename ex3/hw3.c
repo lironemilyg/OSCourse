@@ -60,14 +60,14 @@ void intlist_destroy(intlist* list) {
 		return;
 	}
 	nodeList_destroy(list->head);
-	if (pthread_cond_destroy(&pop_cond) != 0) {
-		perror("cond destroy failed\n");
-		exit(-1);
-	}
-	if (pthread_mutex_destroy(&list->lock) != 0) {
-		perror("mutex destroy failed\n");
-		exit(-1);
-	}
+//	if (pthread_cond_destroy(&pop_cond) != 0) {
+//		perror("cond destroy failed\n");
+//		exit(-1);
+//	}
+//	if (pthread_mutex_destroy(&list->lock) != 0) {
+//		perror("mutex destroy failed\n");
+//		exit(-1);
+//	}
 	free(list);
 }
 
