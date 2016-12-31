@@ -218,7 +218,7 @@ void *garbage_collector_func(void *t) {
 			printf("GC – %d items removed from the list\n", half);
 		}
 	}
-	printf("breakPoint: write -Flag false %d\n", 11);
+	printf("breakPoint: GC -Flag false %d\n", 11);
 	pthread_exit((void*) t);
 }
 
@@ -369,17 +369,17 @@ int main(int argc, char* argv[]) {
 
 	size =1;
 	printf("breakPoint: before print %d\n", 8);
-	while (size > 0) {
-		t = intlist_pop_tail(list);
-		fflush(NULL);
-		printf("%d", t);
-		if (size == 1) {
-			putchar('\n');
-		} else {
-			putchar(' ');
-		}
-		--size;
-	}
+//	while (size > 0) {
+//		t = intlist_pop_tail(list);
+//		fflush(NULL);
+//		printf("%d", t);
+//		if (size == 1) {
+//			putchar('\n');
+//		} else {
+//			putchar(' ');
+//		}
+//		--size;
+//	}
 
 	if (pthread_cond_destroy(&garbage_collector_cond) != 0) {
 		perror("garbage_collector_cond destroy failed\n");
