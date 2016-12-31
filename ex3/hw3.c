@@ -367,7 +367,6 @@ int main(int argc, char* argv[]) {
 	fflush(NULL);
 	printf("size is: %d\n", size);
 
-	//size =1; //breakpoint
 	printf("breakPoint: before print %d\n", 8);
 	while (size > 0) {
 		t = intlist_pop_tail(list);
@@ -386,7 +385,7 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
-	intlist_destroy(list);
+//	intlist_destroy(list);
 	if (pthread_mutexattr_destroy(&attr) != 0) {
 			perror("mutexattr destroy failed\n");
 			exit(-1);
