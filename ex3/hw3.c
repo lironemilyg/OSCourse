@@ -52,7 +52,7 @@ void nodeList_destroy(Node* head) {
 		return;
 	}
 	nodeList_destroy(head->next);
-	free(head);
+//	free(head); //breakpoint
 }
 
 void intlist_destroy(intlist* list) {
