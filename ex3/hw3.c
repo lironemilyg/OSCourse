@@ -149,6 +149,10 @@ int intlist_pop_tail(intlist* list) {
 		temp->prev->next = NULL;
 		temp->prev = NULL;
 	}
+	else{
+		list->tail = NULL;
+		list->head = NULL;
+	}
 	list->size--;
 	if (pthread_mutex_unlock(&list->lock) != 0) {
 		perror("mutex unlock failed\n");
@@ -329,6 +333,7 @@ int main(int argc, char* argv[]) {
 		perror("gc_cond signal failed\n");
 		exit(-1);
 	}
+
 //	for (t = 0; t < wnum; t++) {
 //		rc = pthread_join(writer_thread[t], &status);
 //		if (rc) {
