@@ -60,15 +60,15 @@ void intlist_destroy(intlist* list) {
 		return;
 	}
 	nodeList_destroy(list->head);
-
-	if (pthread_mutex_destroy(&list->lock) != 0) {
-		perror("mutex destroy failed\n");
-		exit(-1);
-	}
-		if (pthread_cond_destroy(&pop_cond) != 0) {
-			perror("cond destroy failed\n");
-			exit(-1);
-		}
+//
+//	if (pthread_mutex_destroy(&list->lock) != 0) {
+//		perror("mutex destroy failed\n");
+//		exit(-1);
+//	}
+//		if (pthread_cond_destroy(&pop_cond) != 0) {
+//			perror("cond destroy failed\n");
+//			exit(-1);
+//		}
 	free(list);
 }
 
@@ -386,7 +386,7 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
-//	intlist_destroy(list);
+	intlist_destroy(list);
 	if (pthread_mutexattr_destroy(&attr) != 0) {
 			perror("mutexattr destroy failed\n");
 			exit(-1);
