@@ -335,10 +335,7 @@ int main(int argc, char* argv[]) {
 	sleep(time);
 
 	//Stop all running threads
-		if (pthread_cancel(gc_thread[0]) != 0) {
-			perror("gc pthread_cancel failed\n");
-			exit(-1);
-		}
+
 
 
 	for (t = 0; t < rnum; t++) {
@@ -357,6 +354,11 @@ int main(int argc, char* argv[]) {
 			exit(-1);
 		}
 		printf("breakPoint: w -after pthread_cancel %d\n", t);
+	}
+
+	if (pthread_cancel(gc_thread[0]) != 0) {
+		perror("gc pthread_cancel failed\n");
+		exit(-1);
 	}
 
 	for (t = 0; t < rnum; t++) {
