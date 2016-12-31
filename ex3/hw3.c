@@ -386,10 +386,10 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
-	if (pthread_mutexattr_destroy(&attr) != 0) {
-		perror("mutexattr destroy failed\n");
-		exit(-1);
-	}
 	intlist_destroy(list);
+	if (pthread_mutexattr_destroy(&attr) != 0) {
+			perror("mutexattr destroy failed\n");
+			exit(-1);
+		}
 	pthread_exit(NULL);
 }
