@@ -24,17 +24,15 @@ typedef struct int_l {
 	Node* head;
 	Node* tail;
 	int size;
-	pthread_cond_t pop_cond;
 	pthread_mutex_t lock;
+	pthread_cond_t pop_cond;
 } intlist;
 
 intlist* list;
+
 pthread_cond_t garbage_collector_cond;
 pthread_mutexattr_t attr;
-bool writer_flag;
-bool reader_flag;
-bool gc_flag;
-int max;
+bool flag;
 
 void intlist_init(intlist* list) {
 	list->size = 0;
@@ -55,7 +53,7 @@ void nodeList_destroy(Node* head) {
 		return;
 	}
 	nodeList_destroy(head->next);
-	free(head);
+	free(head); //breakpoint
 }
 
 void intlist_destroy(intlist* list) {
@@ -68,7 +66,7 @@ void intlist_destroy(intlist* list) {
 		perror("mutex destroy failed\n");
 		exit(-1);
 	}
-	if (pthread_cond_destroy(&list->pop_cond) != 0) {
+	if (pthread_cond_destroy(&pop_cond) != 0) {
 		perror("cond destroy failed\n");
 		exit(-1);
 	}
@@ -92,7 +90,7 @@ void intlist_push_head(intlist* list, int value) {
 	}
 	list->head = newNode;
 	++list->size;
-	if (pthread_cond_signal(&list->pop_cond) != 0) {
+	if (pthread_cond_signal(&pop_cond) != 0) {
 		perror("pop_cond signal failed\n");
 		exit(-1);
 	}
@@ -145,7 +143,7 @@ int intlist_pop_tail(intlist* list) {
 		exit(-1);
 	}
 	while (1 > list->size) {
-		pthread_cond_wait(&list->pop_cond, &list->lock);
+		pthread_cond_wait(&pop_cond, &list->lock);
 	}
 	temp = list->tail;
 	if (temp->prev != NULL) {
@@ -170,16 +168,44 @@ pthread_mutex_t* intlist_get_mutex(intlist* list) {
 	return &list->lock;
 }
 
+//void printList(Node* head) {
+//	Node* current = head;
+//	while (current != NULL) {
+//		printf("%d", current->data);
+//		if (!current->next) {
+//			putchar('\n');
+//		} else {
+//			putchar(' ');
+//		}
+//		current = current->next;
+//	}
+//}
+//
+//void printListRev(Node* tail) {
+//	Node* current = tail;
+//	while (current != NULL) {
+//		printf("%d", current->data);
+//		if (!current->prev) {
+//			putchar('\n');
+//		} else {
+//			putchar(' ');
+//		}
+//		current = current->prev;
+//	}
+//}
+
 void *garbage_collector_func(void *t) {
+	int max = (int) t;
 	int size, half;
-	while (gc_flag) {
-		if (pthread_mutex_lock(intlist_get_mutex(list)) != 0) {
+	while (flag) {
+		if (pthread_mutex_lock(&list->lock) != 0) {
 			perror("mutex lock failed\n");
 			exit(-1);
 		}
-		pthread_cond_wait(&garbage_collector_cond, intlist_get_mutex(list));
-		if (gc_flag == false) {
-			if (pthread_mutex_unlock(intlist_get_mutex(list)) != 0) {
+		pthread_cond_wait(&garbage_collector_cond, &list->lock);
+		if (flag == false) {
+
+			if (pthread_mutex_unlock(&list->lock) != 0) {
 				perror("mutex unlock failed\n");
 				exit(-1);
 			}
@@ -187,10 +213,10 @@ void *garbage_collector_func(void *t) {
 		}
 		size = intlist_size(list);
 		if (size >= max) {
-			half = (int) size/2 + 1;
+			half = (int) size / 2;
 			intlist_remove_last_k(list, half);
 		}
-		if (pthread_mutex_unlock(intlist_get_mutex(list)) != 0) {
+		if (pthread_mutex_unlock(&list->lock) != 0) {
 			perror("mutex unlock failed\n");
 			exit(-1);
 		}
@@ -198,15 +224,18 @@ void *garbage_collector_func(void *t) {
 			printf("GC – %d items removed from the list\n", half);
 		}
 	}
+	printf("breakPoint: GC -Flag false %d\n", 11);
 	pthread_exit((void*) t);
 }
 
 void *writer_func(void *t) {
+	int max = (int) t;
 	int r;
-	unsigned int seed = time(NULL) ^ (unsigned int) t;
-	while (writer_flag) {
-		r = rand_r(&seed);
+	while (flag) {
+		srand(time(NULL));
+		r = rand();
 		if (intlist_size(list) >= max) {
+			printf("breakPoint: write send signal %d\n", 4);
 			if (pthread_cond_signal(&garbage_collector_cond) != 0) {
 				perror("gc_cond signal failed\n");
 				exit(-1);
@@ -214,19 +243,22 @@ void *writer_func(void *t) {
 		}
 		intlist_push_head(list, r);
 	}
+	printf("breakPoint: write -Flag false %d\n", 9);
 	pthread_exit((void*) t);
 }
 
 void *reader_func(void *t) {
 	int r;
-	while (reader_flag) {
+	printf("breakPoint: Reader Thread create %d\n", 3);
+	while (flag) {
 		r = intlist_pop_tail(list);
 	}
+	printf("breakPoint: read -Flag false %d\n", 10);
 	pthread_exit((void*) t);
 }
 
 int main(int argc, char* argv[]) {
-	int wnum, rnum, time;
+	int wnum, rnum, max, time;
 	if (argc != 5) {
 		printf("invalid number of arguments\n");
 		exit(-1);
@@ -251,13 +283,9 @@ int main(int argc, char* argv[]) {
 		printf("time - invalid arguments\n");
 		exit(-1);
 	}
-	int rc, temp;
-	long t;
+	int t, rc;
 	void *status;
-	reader_flag = true;
-	writer_flag = true;
-	gc_flag = true;
-
+	flag = true;
 	pthread_t writer_thread[wnum];
 	pthread_t reader_thread[rnum];
 	pthread_t gc_thread[1];
@@ -280,14 +308,14 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
+	long lmax = (long) max;
 	//Creating a thread for the garbage collector
-	t = 0;
-	pthread_create(&gc_thread[0], NULL, garbage_collector_func, (void *) t);
+	pthread_create(&gc_thread[0], NULL, garbage_collector_func, (void *) lmax);
 
 	//Creating WNUM threads for the writers.
 	for (t = 0; t < wnum; t++) {
 		rc = pthread_create(&writer_thread[t], NULL, writer_func,
-				(void *) t);
+				(void *) lmax);
 		if (rc) {
 			printf("ERROR in pthread_create(): %s\n", strerror(rc));
 			exit(-1);
@@ -297,7 +325,7 @@ int main(int argc, char* argv[]) {
 	//Creating RNUM threads for the readers.
 	for (t = 0; t < rnum; t++) {
 		rc = pthread_create(&reader_thread[t], NULL, reader_func,
-				(void *) t);
+				(void *) lmax);
 		if (rc) {
 			printf("ERROR in pthread_create(): %s\n", strerror(rc));
 			exit(-1);
@@ -308,42 +336,67 @@ int main(int argc, char* argv[]) {
 	sleep(time);
 
 	//Stop all running threads
-	reader_flag = false;
+	for (t = 0; t < rnum; t++) {
+		rc = pthread_cancel(reader_thread[t]);
+		if (rc) {
+			printf("ERROR in pthread_cancel(): %s\n", strerror(rc));
+			exit(-1);
+		}
+		printf("breakPoint: r -after pthread_cancel %d\n", t);
+	}
+
+	for (t = 0; t < wnum; t++) {
+		rc = pthread_cancel(writer_thread[t]);
+		if (rc) {
+			printf("ERROR in pthread_cancel(): %s\n", strerror(rc));
+			exit(-1);
+		}
+		printf("breakPoint: w -after pthread_cancel %d\n", t);
+	}
+
+	if (pthread_cancel(gc_thread[0]) != 0) {
+		perror("gc pthread_cancel failed\n");
+		exit(-1);
+	}
+
 	for (t = 0; t < rnum; t++) {
 		rc = pthread_join(reader_thread[t], &status);
 		if (rc) {
 			printf("ERROR in pthread_join(): %s\n", strerror(rc));
 			exit(-1);
 		}
+		printf("breakPoint: r -after join %d\n", t);
+
 	}
-	writer_flag = false;
+
 	for (t = 0; t < wnum; t++) {
 		rc = pthread_join(writer_thread[t], &status);
 		if (rc) {
 			printf("ERROR in pthread_join(): %s\n", strerror(rc));
 			exit(-1);
 		}
+		printf("breakPoint: w -after join %d\n", t);
 	}
-	gc_flag = false;
-	if (pthread_cond_signal(&garbage_collector_cond) != 0) {
-		perror("gc_cond signal failed\n");
-		exit(-1);
-	}
+
+	printf("breakPoint: write and read -after join %d\n", 8);
+
 	rc = pthread_join(gc_thread[0], &status);
 	if (rc) {
 		printf("ERROR in pthread_join(): %s\n", strerror(rc));
 		exit(-1);
 	}
-
+	printf("breakPoint: GC -after join %d\n", 8);
 
 	//print list
 	int size = intlist_size(list);
 	fflush(NULL);
 	printf("size is: %d\n", size);
+
+	printf("breakPoint: before print %d\n", 8);
 	while (size > 0) {
-		temp = intlist_pop_tail(list);
+		t = intlist_pop_tail(list);
 		fflush(NULL);
-		printf("%d", temp);
+		printf("%d", t);
 		if (size == 1) {
 			putchar('\n');
 		} else {
