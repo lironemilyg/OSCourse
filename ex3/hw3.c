@@ -28,7 +28,7 @@ typedef struct int_l {
 	pthread_mutex_t lock;
 } intlist;
 
-intlist* list;
+intlist list;
 pthread_cond_t garbage_collector_cond;
 pthread_mutexattr_t attr;
 bool writer_flag;
@@ -72,7 +72,6 @@ void intlist_destroy(intlist* list) {
 		perror("cond destroy failed\n");
 		exit(-1);
 	}
-	free(list);
 }
 
 void intlist_push_head(intlist* list, int value) {
@@ -125,8 +124,14 @@ void intlist_remove_last_k(intlist* list, int k) {
 			temp = temp->prev;
 			--k;
 		}
-		list->tail = temp->prev;
-		list->tail->next = NULL;
+		if (temp->prev != NULL) {
+			list->tail = temp->prev;
+			list->tail->next = NULL;
+		} else {
+			list->tail = NULL;
+			list->head = NULL;
+		}
+
 	}
 	temp->prev = NULL;
 	list->size -= kBuckup;
@@ -173,24 +178,24 @@ pthread_mutex_t* intlist_get_mutex(intlist* list) {
 void *garbage_collector_func(void *t) {
 	int size, half;
 	while (gc_flag) {
-		if (pthread_mutex_lock(intlist_get_mutex(list)) != 0) {
+		if (pthread_mutex_lock(intlist_get_mutex(&list)) != 0) {
 			perror("mutex lock failed\n");
 			exit(-1);
 		}
-		pthread_cond_wait(&garbage_collector_cond, intlist_get_mutex(list));
+		pthread_cond_wait(&garbage_collector_cond, intlist_get_mutex(&list));
 		if (gc_flag == false) {
-			if (pthread_mutex_unlock(intlist_get_mutex(list)) != 0) {
+			if (pthread_mutex_unlock(intlist_get_mutex(&list)) != 0) {
 				perror("mutex unlock failed\n");
 				exit(-1);
 			}
 			break;
 		}
-		size = intlist_size(list);
+		size = intlist_size(&list);
 		if (size >= max) {
-			half = (int) size/2 + 1;
-			intlist_remove_last_k(list, half);
+			half = (int) size / 2 + 1;
+			intlist_remove_last_k(&list, half);
 		}
-		if (pthread_mutex_unlock(intlist_get_mutex(list)) != 0) {
+		if (pthread_mutex_unlock(intlist_get_mutex(&list)) != 0) {
 			perror("mutex unlock failed\n");
 			exit(-1);
 		}
@@ -203,16 +208,17 @@ void *garbage_collector_func(void *t) {
 
 void *writer_func(void *t) {
 	int r;
-	unsigned int seed = time(NULL) ^ (unsigned int) t;
+	time_t ti;
+	srand((unsigned) time(&ti));
 	while (writer_flag) {
-		r = rand_r(&seed);
-		if (intlist_size(list) >= max) {
+		r = rand();
+		if (intlist_size(&list) >= max) {
 			if (pthread_cond_signal(&garbage_collector_cond) != 0) {
 				perror("gc_cond signal failed\n");
 				exit(-1);
 			}
 		}
-		intlist_push_head(list, r);
+		intlist_push_head(&list, r);
 	}
 	pthread_exit((void*) t);
 }
@@ -220,7 +226,7 @@ void *writer_func(void *t) {
 void *reader_func(void *t) {
 	int r;
 	while (reader_flag) {
-		r = intlist_pop_tail(list);
+		r = intlist_pop_tail(&list);
 	}
 	pthread_exit((void*) t);
 }
@@ -263,7 +269,6 @@ int main(int argc, char* argv[]) {
 	pthread_t gc_thread[1];
 	//starting flow
 	//initialization a global doubly-linked list of integers.
-	list = (intlist*) malloc(sizeof(*list));
 	if (pthread_mutexattr_init(&attr) != 0) {
 		perror("mutexattr init failed\n");
 		exit(-1);
@@ -272,7 +277,7 @@ int main(int argc, char* argv[]) {
 		perror("mutexattr settype failed\n");
 		exit(-1);
 	}
-	intlist_init(list);
+	intlist_init(&list);
 
 	//initialize garbage_collector_cond
 	if (pthread_cond_init(&garbage_collector_cond, NULL) != 0) {
@@ -286,21 +291,19 @@ int main(int argc, char* argv[]) {
 
 	//Creating WNUM threads for the writers.
 	for (t = 0; t < wnum; t++) {
-		rc = pthread_create(&writer_thread[t], NULL, writer_func,
-				(void *) t);
+		rc = pthread_create(&writer_thread[t], NULL, writer_func, (void *) t);
 		if (rc) {
 			printf("ERROR in pthread_create(): %s\n", strerror(rc));
-			exit(-1);
+			exit(rc);
 		}
 	}
 
 	//Creating RNUM threads for the readers.
 	for (t = 0; t < rnum; t++) {
-		rc = pthread_create(&reader_thread[t], NULL, reader_func,
-				(void *) t);
+		rc = pthread_create(&reader_thread[t], NULL, reader_func, (void *) t);
 		if (rc) {
 			printf("ERROR in pthread_create(): %s\n", strerror(rc));
-			exit(-1);
+			exit(rc);
 		}
 	}
 
@@ -313,7 +316,7 @@ int main(int argc, char* argv[]) {
 		rc = pthread_join(reader_thread[t], &status);
 		if (rc) {
 			printf("ERROR in pthread_join(): %s\n", strerror(rc));
-			exit(-1);
+			exit(rc);
 		}
 	}
 	writer_flag = false;
@@ -321,27 +324,26 @@ int main(int argc, char* argv[]) {
 		rc = pthread_join(writer_thread[t], &status);
 		if (rc) {
 			printf("ERROR in pthread_join(): %s\n", strerror(rc));
-			exit(-1);
+			exit(rc);
 		}
 	}
 	gc_flag = false;
 	if (pthread_cond_signal(&garbage_collector_cond) != 0) {
 		perror("gc_cond signal failed\n");
-		exit(-1);
+		exit(rc);
 	}
 	rc = pthread_join(gc_thread[0], &status);
 	if (rc) {
 		printf("ERROR in pthread_join(): %s\n", strerror(rc));
-		exit(-1);
+		exit(rc);
 	}
 
-
 	//print list
-	int size = intlist_size(list);
+	int size = intlist_size(&list);
 	fflush(NULL);
 	printf("size is: %d\n", size);
 	while (size > 0) {
-		temp = intlist_pop_tail(list);
+		temp = intlist_pop_tail(&list);
 		fflush(NULL);
 		printf("%d", temp);
 		if (size == 1) {
@@ -357,7 +359,7 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
-	intlist_destroy(list);
+	intlist_destroy(&list);
 	if (pthread_mutexattr_destroy(&attr) != 0) {
 		perror("mutexattr destroy failed\n");
 		exit(-1);
