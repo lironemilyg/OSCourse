@@ -26,11 +26,11 @@ typedef struct int_l {
 	int size;
 	pthread_cond_t pop_cond;
 	pthread_mutex_t lock;
+	pthread_mutexattr_t attr;
 } intlist;
 
 intlist list;
 pthread_cond_t garbage_collector_cond;
-pthread_mutexattr_t attr;
 bool writer_flag;
 bool reader_flag;
 bool gc_flag;
@@ -40,7 +40,15 @@ void intlist_init(intlist* list) {
 	list->size = 0;
 	list->head = NULL;
 	list->tail = NULL;
-	if (pthread_mutex_init(&list->lock, &attr) != 0) {
+	if (pthread_mutexattr_init(&list->attr) != 0) {
+		perror("mutexattr init failed\n");
+		exit(-1);
+	}
+	if (pthread_mutexattr_settype(&list->attr, PTHREAD_MUTEX_RECURSIVE) != 0) {
+		perror("mutexattr settype failed\n");
+		exit(-1);
+	}
+	if (pthread_mutex_init(&list->lock, &list->attr) != 0) {
 		perror("mutex init failed\n");
 		exit(-1);
 	}
@@ -63,13 +71,16 @@ void intlist_destroy(intlist* list) {
 		return;
 	}
 	nodeList_destroy(list->head);
-
 	if (pthread_mutex_destroy(&list->lock) != 0) {
 		perror("mutex destroy failed\n");
 		exit(-1);
 	}
 	if (pthread_cond_destroy(&list->pop_cond) != 0) {
 		perror("cond destroy failed\n");
+		exit(-1);
+	}
+	if (pthread_mutexattr_destroy(&list->attr) != 0) {
+		perror("mutexattr destroy failed\n");
 		exit(-1);
 	}
 }
@@ -269,14 +280,6 @@ int main(int argc, char* argv[]) {
 	pthread_t gc_thread[1];
 	//starting flow
 	//initialization a global doubly-linked list of integers.
-	if (pthread_mutexattr_init(&attr) != 0) {
-		perror("mutexattr init failed\n");
-		exit(-1);
-	}
-	if (pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE) != 0) {
-		perror("mutexattr settype failed\n");
-		exit(-1);
-	}
 	intlist_init(&list);
 
 	//initialize garbage_collector_cond
@@ -360,9 +363,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	intlist_destroy(&list);
-	if (pthread_mutexattr_destroy(&attr) != 0) {
-		perror("mutexattr destroy failed\n");
-		exit(-1);
-	}
+
 	pthread_exit(NULL);
 }
