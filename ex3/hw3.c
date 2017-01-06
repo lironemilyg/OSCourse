@@ -37,24 +37,29 @@ bool gc_flag;
 int max;
 
 void intlist_init(intlist* list) {
+	int rc;
 	list->size = 0;
 	list->head = NULL;
 	list->tail = NULL;
-	if (pthread_mutexattr_init(&list->attr) != 0) {
+	rc = pthread_mutexattr_init(&list->attr);
+	if (rc != 0) {
 		perror("mutexattr init failed\n");
-		exit(-1);
+		exit(rc);
 	}
-	if (pthread_mutexattr_settype(&list->attr, PTHREAD_MUTEX_RECURSIVE) != 0) {
+	rc = pthread_mutexattr_settype(&list->attr, PTHREAD_MUTEX_RECURSIVE);
+	if (rc != 0) {
 		perror("mutexattr settype failed\n");
-		exit(-1);
+		exit(rc);
 	}
-	if (pthread_mutex_init(&list->lock, &list->attr) != 0) {
+	rc = pthread_mutex_init(&list->lock, &list->attr);
+	if (rc != 0) {
 		perror("mutex init failed\n");
-		exit(-1);
+		exit(rc);
 	}
-	if (pthread_cond_init(&list->pop_cond, NULL) != 0) {
+	rc = pthread_cond_init(&list->pop_cond, NULL);
+	if (rc != 0) {
 		perror("cond init failed\n");
-		exit(-1);
+		exit(rc);
 	}
 }
 
@@ -67,31 +72,37 @@ void nodeList_destroy(Node* head) {
 }
 
 void intlist_destroy(intlist* list) {
+	int rc;
 	if (!list) {
 		return;
 	}
 	nodeList_destroy(list->head);
-	if (pthread_mutex_destroy(&list->lock) != 0) {
+	rc = pthread_mutex_destroy(&list->lock);
+	if (rc != 0) {
 		perror("mutex destroy failed\n");
-		exit(-1);
+		exit(rc);
 	}
-	if (pthread_cond_destroy(&list->pop_cond) != 0) {
+	rc = pthread_cond_destroy(&list->pop_cond);
+	if (rc != 0) {
 		perror("cond destroy failed\n");
-		exit(-1);
+		exit(rc);
 	}
-	if (pthread_mutexattr_destroy(&list->attr) != 0) {
+	rc = pthread_mutexattr_destroy(&list->attr);
+	if (rc != 0) {
 		perror("mutexattr destroy failed\n");
-		exit(-1);
+		exit(rc);
 	}
 }
 
 void intlist_push_head(intlist* list, int value) {
+	int rc;
 	Node* newNode = (Node*) malloc(sizeof(*newNode));
 	newNode->prev = NULL;
 	newNode->data = value;
-	if (pthread_mutex_lock(&list->lock) != 0) {
+	rc = pthread_mutex_lock(&list->lock);
+	if (rc != 0) {
 		perror("mutex lock failed\n");
-		exit(-1);
+		exit(rc);
 	}
 	if (list->head == NULL && list->tail == NULL) {
 		list->tail = newNode;
@@ -102,26 +113,32 @@ void intlist_push_head(intlist* list, int value) {
 	}
 	list->head = newNode;
 	++list->size;
-	if (pthread_cond_signal(&list->pop_cond) != 0) {
+	rc = pthread_cond_signal(&list->pop_cond);
+	if (rc != 0) {
 		perror("pop_cond signal failed\n");
-		exit(-1);
+		exit(rc);
 	}
-	if (pthread_mutex_unlock(&list->lock) != 0) {
+	rc = pthread_mutex_unlock(&list->lock);
+	if (rc != 0) {
 		perror("mutex unlock failed\n");
-		exit(-1);
+		exit(rc);
 	}
 }
 
 int intlist_size(intlist* list) {
-	return list->size;
+	int size;
+	size = list->size;
+	return size;
 }
 
 void intlist_remove_last_k(intlist* list, int k) {
 	Node* temp;
 	int kBuckup = k;
-	if (pthread_mutex_lock(&list->lock) != 0) {
+	int rc;
+	rc = pthread_mutex_lock(&list->lock);
+	if (rc != 0) {
 		perror("mutex lock failed\n");
-		exit(-1);
+		exit(rc);
 	}
 	if (k > list->size) {
 		k = list->size;
@@ -146,19 +163,21 @@ void intlist_remove_last_k(intlist* list, int k) {
 	}
 	temp->prev = NULL;
 	list->size -= kBuckup;
-	if (pthread_mutex_unlock(&list->lock) != 0) {
+	rc = pthread_mutex_unlock(&list->lock);
+	if (rc != 0) {
 		perror("mutex unlock failed\n");
-		exit(-1);
+		exit(rc);
 	}
 	nodeList_destroy(temp);
 }
 
 int intlist_pop_tail(intlist* list) {
 	Node* temp;
-	int val;
-	if (pthread_mutex_lock(&list->lock) != 0) {
+	int val, rc;
+	rc = pthread_mutex_lock(&list->lock);
+	if (rc != 0) {
 		perror("mutex lock failed\n");
-		exit(-1);
+		exit(rc);
 	}
 	while (1 > list->size) {
 		pthread_cond_wait(&list->pop_cond, &list->lock);
@@ -173,9 +192,10 @@ int intlist_pop_tail(intlist* list) {
 		list->head = NULL;
 	}
 	--list->size;
-	if (pthread_mutex_unlock(&list->lock) != 0) {
+	rc = pthread_mutex_unlock(&list->lock);
+	if (rc != 0) {
 		perror("mutex unlock failed\n");
-		exit(-1);
+		exit(rc);
 	}
 	val = temp->data;
 	nodeList_destroy(temp);
@@ -187,17 +207,19 @@ pthread_mutex_t* intlist_get_mutex(intlist* list) {
 }
 
 void *garbage_collector_func(void *t) {
-	int size, half;
+	int size, half, rc;
 	while (gc_flag) {
-		if (pthread_mutex_lock(intlist_get_mutex(&list)) != 0) {
+		rc = pthread_mutex_lock(intlist_get_mutex(&list));
+		if (rc != 0) {
 			perror("mutex lock failed\n");
-			exit(-1);
+			exit(rc);
 		}
 		pthread_cond_wait(&garbage_collector_cond, intlist_get_mutex(&list));
 		if (gc_flag == false) {
-			if (pthread_mutex_unlock(intlist_get_mutex(&list)) != 0) {
+			rc = pthread_mutex_unlock(intlist_get_mutex(&list));
+			if (rc != 0) {
 				perror("mutex unlock failed\n");
-				exit(-1);
+				exit(rc);
 			}
 			break;
 		}
@@ -206,9 +228,10 @@ void *garbage_collector_func(void *t) {
 			half = (int) size / 2 + 1;
 			intlist_remove_last_k(&list, half);
 		}
-		if (pthread_mutex_unlock(intlist_get_mutex(&list)) != 0) {
+		rc = pthread_mutex_unlock(intlist_get_mutex(&list));
+		if (rc != 0) {
 			perror("mutex unlock failed\n");
-			exit(-1);
+			exit(rc);
 		}
 		if (size >= max) {
 			printf("GC – %d items removed from the list\n", half);
@@ -218,15 +241,16 @@ void *garbage_collector_func(void *t) {
 }
 
 void *writer_func(void *t) {
-	int r;
+	int r, rc;
 	time_t ti;
 	srand((unsigned) time(&ti));
 	while (writer_flag) {
 		r = rand();
 		if (intlist_size(&list) >= max) {
-			if (pthread_cond_signal(&garbage_collector_cond) != 0) {
+			rc = pthread_cond_signal(&garbage_collector_cond);
+			if (rc != 0) {
 				perror("gc_cond signal failed\n");
-				exit(-1);
+				exit(rc);
 			}
 		}
 		intlist_push_head(&list, r);
@@ -283,9 +307,10 @@ int main(int argc, char* argv[]) {
 	intlist_init(&list);
 
 	//initialize garbage_collector_cond
-	if (pthread_cond_init(&garbage_collector_cond, NULL) != 0) {
+	rc = pthread_cond_init(&garbage_collector_cond, NULL);
+	if (rc != 0) {
 		perror("garbage_collector_cond init failed\n");
-		exit(-1);
+		exit(rc);
 	}
 
 	//Creating a thread for the garbage collector
@@ -357,9 +382,10 @@ int main(int argc, char* argv[]) {
 		--size;
 	}
 
-	if (pthread_cond_destroy(&garbage_collector_cond) != 0) {
+	rc = pthread_cond_destroy(&garbage_collector_cond);
+	if (rc != 0) {
 		perror("garbage_collector_cond destroy failed\n");
-		exit(-1);
+		exit(rc);
 	}
 
 	intlist_destroy(&list);
