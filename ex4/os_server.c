@@ -103,17 +103,17 @@ int main(int argc, char *argv[]) {
 			exit(-1);
 		}
 		fdkey = open(keyfilename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-			if (fdkey < 0) {
-				printf("error open() output file %s: %s\n", argv[2], strerror(errno));
-				return errno;
-			}
+		if (fdkey < 0) {
+			printf("error open() output file %s: %s\n", argv[2],
+					strerror(errno));
+			return errno;
+		}
 		if (create_key_file(fdkey, keylen) < 0) {
 			printf("error in creating key file\n");
 			exit(-1);
 		}
 		close(fdkey);
 	}
-
 
 	int totalsent, nsent, len, n = 0, listenfd = 0, connfd = 0;
 	struct sockaddr_in serv_addr, my_addr, peer_addr;
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
 		exit(errno);
 	}
 
-	while (flag) {
+	while (1) {
 		/* new connection */
 		socklen_t addrsize = sizeof(struct sockaddr_in);
 		connfd = accept(listenfd, (struct sockaddr*) &peer_addr, &addrsize);
@@ -145,73 +145,81 @@ int main(int argc, char *argv[]) {
 		}
 		int forked = fork();
 		if (forked == 0) {
-			char srcbuf[BUF_SIZE];
-			int totalRcv = 0;
 			int fdkey = open(keyfilename, O_RDONLY);
-				if (fdkey < 0) {
-					printf("error open() key file %s: %s\n", keyfilename,
-							strerror(errno));
-					return errno;
+			if (fdkey < 0) {
+				printf("error open() key file %s: %s\n", keyfilename,
+						strerror(errno));
+				return errno;
+			}
+			listenfd = connfd; //breakPoint
+			while (flag) {
+				char srcbuf[BUF_SIZE];
+				int totalRcv = 0;
+				memset(srcbuf, '0', sizeof(srcbuf));
+				//read buffer from client
+				while ((nread = read(connfd, srcbuf + totalRcv,
+						sizeof(srcbuf) - totalRcv)) > 0) {
+					srcbuf[nread] = 0;
+					if (fputs(srcbuf, stdout) == EOF) {
+						printf("\n Error : Fputs error\n");
+					}
+					totalRcv += nread;
 				}
-			memset(srcbuf, '0', sizeof(srcbuf));
-			//read buffer from client
-			while ((nread = read(connfd, srcbuf + totalRcv,
-					sizeof(srcbuf) - totalRcv)) > 0) {
-				srcbuf[nread] = 0;
-				if (fputs(srcbuf, stdout) == EOF) {
-					printf("\n Error : Fputs error\n");
+				if (nread < 0) {
+					perror("\n Read error \n");
 				}
-				totalRcv += nread;
-			}
-			if (nread < 0) {
-				perror("\n Read error \n");
-			}
-			printf("brakepoint - rcv from client: %d bytes\n", totalRcv);
-			printf("brakepoint - rcv from client: %s\n\n", srcbuf);
+				printf("brakepoint - rcv from client: %d bytes\n", totalRcv);
+				printf("brakepoint - rcv from client: %s\n\n", srcbuf);
 
-			//xor buffers
-			if (xor_buffers(srcbuf, totalRcv, fdkey) < 0) {
-				printf("error occured - xor buffers failed \n");
-				return -1;
-			}
-			printf("brakepoint - finish xor files: %s\n\n", srcbuf);
-
-			int totalsent = 0;
-			int notwritten = totalRcv;
-			printf("brakepoint - need to server: %d bytes\n", notwritten);
-			/* keep looping until nothing left to write*/
-			while (notwritten > 0) {
-				printf("brakepoint - need to client: %d bytes\n", notwritten);
-				/* notwritten = how much we have left to write
-				 totalsent  = how much we've written so far
-				 nsent = how much we've written in last write() call */
-				nsent = write(connfd, srcbuf + totalsent, notwritten);
-				if(nsent < 0){
-					printf("error occured - write to server \n");
+				if (totalRcv < BUF_SIZE) {
+					flag = false;
+				}
+				//xor buffers
+				if (xor_buffers(srcbuf, totalRcv, fdkey) < 0) {
+					printf("error occured - xor buffers failed \n");
 					return -1;
 				}
-				totalsent += nsent;
-				notwritten -= nsent;
-			}
+				printf("brakepoint - finish xor files: %s\n\n", srcbuf);
 
-			printf("brakepoint - finish to sent to client: %d bytes\n", totalsent);
-			printf("\nbrakepoint - finish to sent to client: %s \n", srcbuf);
+				int totalsent = 0;
+				int notwritten = totalRcv;
+				printf("brakepoint - need to server: %d bytes\n", notwritten);
+				/* keep looping until nothing left to write*/
+				while (notwritten > 0) {
+					printf("brakepoint - need to client: %d bytes\n",
+							notwritten);
+					/* notwritten = how much we have left to write
+					 totalsent  = how much we've written so far
+					 nsent = how much we've written in last write() call */
+					nsent = write(connfd, srcbuf + totalsent, notwritten);
+					if (nsent < 0) {
+						printf("error occured - write to server \n");
+						return -1;
+					}
+					totalsent += nsent;
+					notwritten -= nsent;
+				}
 
-			if (totalRcv != totalsent) {
-				printf("error occured - sending enc file to server failed \n");
-				return -1;
+				printf("brakepoint - finish to sent to client: %d bytes\n",
+						totalsent);
+				printf("\nbrakepoint - finish to sent to client: %s \n",
+						srcbuf);
+
+				if (totalRcv != totalsent) {
+					printf(
+							"error occured - sending enc file to server failed \n");
+					return -1;
+				}
 			}
+			close(connfd);
 			close(fdkey);
 			printf("brakepoint - sent to client: %d bytes\n", totalsent);
 		} else if (forked < 0) {
 			printf("error occured - forked failed \n");
 			return -1;
 		}
-
-		/* close socket  */
-		//close(connfd);
 	}
-
+	close(listenfd);
 	return 0;
 }
 

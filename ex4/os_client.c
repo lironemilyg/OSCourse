@@ -116,33 +116,23 @@ int main(int argc, char *argv[]) {
 		//read dst buffer from server
 		int totalRcv = 0;
 		memset(sendBuff, '0', sizeof(sendBuff));
-		nread = read(sockfd, sendBuff,totalsent);
-		if (nread < 0) {
-			printf("\n Read error :%s\n", strerror(errno));
+		//read buffer from client
+		while ((nread = read(sockfd, sendBuff + totalRcv,
+				sizeof(sendBuff) - totalRcv)) > 0) {
+			printf("brakepoint - rcv read from server: %d bytes\n", nread);
+			sendBuff[nread] = 0;
+			if (fputs(sendBuff, stdout) == EOF) {
+				printf("\n Error : Fputs error\n");
+			}
+			totalRcv += nread;
 		}
 		printf("brakepoint - rcv read from server: %d bytes\n", nread);
 		totalRcv += nread;
-		//read buffer from client
-//		while ((nread = read(sockfd, sendBuff + totalRcv,
-//				sizeof(sendBuff) - totalRcv)) > 0) {
-//			printf("brakepoint - rcv read from server: %d bytes\n", nread);
-//			sendBuff[nread] = 0;
-//			if (fputs(sendBuff, stdout) == EOF) {
-//				printf("\n Error : Fputs error\n");
-//			}
-//			totalRcv += nread;
-//		}
-//		printf("brakepoint - rcv read from server: %d bytes\n", nread);
-//		totalRcv += nread;
-//		if (nread < 0) {
-//			printf("\n Read error :%s\n", strerror(errno));
-//				}
-		printf("brakepoint - rcv from server: %d bytes\n", totalRcv);
-		printf("brakepoint - rcv from server: %s\n\n", sendBuff);
 		if (nread < 0) {
 			printf("\n Read error :%s\n", strerror(errno));
-		}
-
+				}
+		printf("brakepoint - rcv from server: %d bytes\n", totalRcv);
+		printf("brakepoint - rcv from server: %s\n\n", sendBuff);
 		if (totalsent != totalRcv) {
 			printf("error occured - read from server \n");
 			return -1;
