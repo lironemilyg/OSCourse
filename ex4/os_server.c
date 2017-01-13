@@ -175,6 +175,8 @@ int main(int argc, char *argv[]) {
 				}
 				//xor buffers
 				printf("brakepoint 4 - before xor first char %d bytes\n", srcbuf[4]);
+				printf("\nbrakepoint 4.5 -after rcv in file from client : %s\n", &srcbuf[4]);
+
 				if (xor_buffers(&srcbuf[4], needToRead, fdkey) < 0) {
 					printf("error occured - xor buffers failed \n");
 					return -1;
@@ -186,7 +188,7 @@ int main(int argc, char *argv[]) {
 					/* notwritten = how much we have left to write
 					 totalsent  = how much we've written so far
 					 nsent = how much we've written in last write() call */
-					nsent = write(connfd, srcbuf + totalsent, notwritten);
+					nsent = write(connfd, srcbuf + 4 + totalsent, notwritten);
 					if (nsent < 0) {
 						printf("error occured - write to server \n");
 						return -1;
@@ -195,6 +197,7 @@ int main(int argc, char *argv[]) {
 					notwritten -= nsent;
 				}
 				printf("brakepoint 5 - after send to client : %d bytes\n", totalsent);
+				printf("\nbrakepoint 5.5 -after rcv in file from client : %s\n", &srcbuf[4]);
 				if (needToRead != totalsent) {
 					printf(
 							"error occured - sending enc file to server failed \n");

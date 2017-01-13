@@ -114,6 +114,8 @@ int main(int argc, char *argv[]) {
 			return -1;
 		}
 		printf("brakepoint 2 -after send src to server - sending to server: %d bytes\n", totalsent);
+		printf("\nbrakepoint 2.5 -after send src to server - sending to server: : %s\n", sendBuff);
+
 		//read dst buffer from server
 		int totalRcv = 0;
 		memset(sendBuff, '0', sizeof(sendBuff));
@@ -134,7 +136,7 @@ int main(int argc, char *argv[]) {
 			return -1;
 		}
 		printf("brakepoint 3 -after rcv enc file from server : %d bytes\n", totalRcv);
-
+		printf("\nbrakepoint 3.5 -after rcv enc file from server : %s\n", sendBuff);
 		//write to dst file
 		numdst = 0;
 		while (numdst < numsrc) {
