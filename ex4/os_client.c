@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
 		numsrc = read(fdsrc, sendBuff, BUF_SIZE);
 		if (numsrc < 0) {
 			printf("error read() from input file: %s\n", strerror(errno));
-			return -1;
+			exit(errno);
 		} else if (numsrc == 0) {
 			break;
 		}
