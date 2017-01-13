@@ -50,7 +50,7 @@ int create_key_file(int fdkey, int keylen) {
 
 int xor_buffers(char* srcbuf, int numsrc, char* keyfilename) {
 	int numkey, num, i;
-	int fdkey = open(keyfilename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	int fdkey = open(keyfilename, O_RDONLY);
 	if (fdkey < 0) {
 		printf("error open() output file %s: %s\n", keyfilename,
 				strerror(errno));

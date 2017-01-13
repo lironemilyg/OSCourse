@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 		} else if (numsrc == 0) {
 			break;
 		}
-
+		printf("finish to read from file: %d bytes\n", numsrc);
 		//sending src buffer to server
 		int totalsent = 0;
 		int notwritten = strlen(sendBuff);
@@ -102,8 +102,10 @@ int main(int argc, char *argv[]) {
 			totalsent += nsent;
 			notwritten -= nsent;
 		}
+
+		printf("finish to sent to server: %d bytes\n", totalsent);
 		if (totalsent != numsrc) {
-			printf("error occured - write to server \n");
+			printf("error occured - total write to server failed \n");
 			return -1;
 		}
 
