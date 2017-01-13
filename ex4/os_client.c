@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
 	close(fdsrc);
 	close(fddst);
 	close(sockfd);
-	printf("brakepoint 5 -disconnect drom server");
+	printf("brakepoint 5 -disconnect drom server\n");
 	return 0;
 }
 

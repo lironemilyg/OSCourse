@@ -49,7 +49,7 @@ int create_key_file(int fdkey, int keylen) {
 }
 
 int xor_buffers(char* srcbuf, int numsrc, int fdkey) {
-	printf("brakepoint 1 - in xor first char %c bytes\n", srcbuf[0]);
+	printf("brakepoint 1 - in xor first char %d bytes\n", srcbuf[0]);
 	int numkey, num, i;
 	char keybuf[numsrc];
 	// set number of bytes read from the key file to 0
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
 					break;
 				}
 				//xor buffers
-				printf("brakepoint 4 - before xor first char %c bytes\n", srcbuf[4]);
+				printf("brakepoint 4 - before xor first char %d bytes\n", srcbuf[4]);
 				if (xor_buffers(&srcbuf[4], needToRead, fdkey) < 0) {
 					printf("error occured - xor buffers failed \n");
 					return -1;
