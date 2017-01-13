@@ -58,7 +58,7 @@ int xor_buffers(char* srcbuf, int numsrc, int fdkey) {
 	while (numkey < numsrc) {
 		num = read(fdkey, keybuf + numkey, numsrc - numkey);
 		printf("brakepoint - in xor_buffers numkey : %d numsrc : %d \n", numkey,numsrc);
-		printf("brakepoint - in xor_buffers - read %d \n");
+		printf("brakepoint - in xor_buffers - read %d \n", num);
 		if (num < 0) {
 			printf("error read() key: %s\n", strerror(errno));
 			exit(errno);
