@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 	int fdkey, keylen, nread;
 	bool flag = true;
 	//initialize arsg
-	if (argc != 4 || argc != 3) {
+	if (argc != 4 && argc != 3) {
 		printf("invalid number of arguments\n");
 		exit(-1);
 	}
