@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 		printf("finish to read from file: %d bytes\n", numsrc);
 		//sending src buffer to server
 		int totalsent = 0;
-		int notwritten = strlen(sendBuff);
+		int notwritten = numsrc;
 		printf("need to server: %d bytes\n", notwritten);
 		/* keep looping until nothing left to write*/
 		while (notwritten > 0) {
