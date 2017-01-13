@@ -89,8 +89,10 @@ int main(int argc, char *argv[]) {
 		//sending src buffer to server
 		int totalsent = 0;
 		int notwritten = strlen(sendBuff);
+		printf("need to server: %d bytes\n", notwritten);
 		/* keep looping until nothing left to write*/
 		while (notwritten > 0) {
+			printf("need to server: %d bytes\n", notwritten);
 			/* notwritten = how much we have left to write
 			 totalsent  = how much we've written so far
 			 nsent = how much we've written in last write() call */
@@ -102,6 +104,8 @@ int main(int argc, char *argv[]) {
 			totalsent += nsent;
 			notwritten -= nsent;
 		}
+		printf("after while need to server: %d bytes\n", notwritten);
+
 
 		printf("finish to sent to server: %d bytes\n", totalsent);
 		if (totalsent != numsrc) {
