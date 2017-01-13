@@ -49,13 +49,12 @@ int main(int argc, char *argv[]) {
 	}
 
 	int sockfd = 0, nread = 0;
-	char recvBuff[BUF_SIZE];
+	//char recvBuff[BUF_SIZE];
 	char sendBuff[BUF_SIZE];
 	struct sockaddr_in serv_addr;
 	struct sockaddr_in my_addr, peer_addr;
 	socklen_t addrsize = sizeof(struct sockaddr_in);
 
-	memset(recvBuff, '0', sizeof(recvBuff));
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		printf("\n Error : Could not create socket \n");
 		return 1;
@@ -76,37 +75,61 @@ int main(int argc, char *argv[]) {
 	}
 
 	bool flag = true;
-	int numsrc, nsent,nwrite,numdst;
+	int numsrc, nsent, nwrite, numdst;
 
 	while (flag) {
 		numsrc = read(fdsrc, sendBuff, BUF_SIZE);
 		if (numsrc < 0) {
 			printf("error read() from input file: %s\n", strerror(errno));
 			return -1;
-		}
-		// received EOF - we're done (and that's the ONLY case we're done!)
-		else if (numsrc == 0) {
+		} else if (numsrc == 0) {
 			break;
 		}
-		nsent = write(sockfd, sendBuff, numsrc);
-		if (nsent != numsrc) {
+
+		//sending src buffer to server
+		int totalsent = 0;
+		int notwritten = strlen(sendBuff);
+		/* keep looping until nothing left to write*/
+		while (notwritten > 0) {
+			/* notwritten = how much we have left to write
+			 totalsent  = how much we've written so far
+			 nsent = how much we've written in last write() call */
+			nsent = write(sockfd, sendBuff + totalsent, notwritten);
+			if(nsent<0){
+				printf("error occured - write to server \n");
+				return -1;
+			}
+			totalsent += nsent;
+			notwritten -= nsent;
+		}
+		if (totalsent != numsrc) {
 			printf("error occured - write to server \n");
 			return -1;
 		}
-		nread = read(sockfd, recvBuff, sizeof(recvBuff) - 1);
-		if (nread != nsent) {
+
+		//read dst buffer from server
+		int totalRcv = 0;
+		memset(sendBuff, '0', sizeof(sendBuff));
+		while ((nread = read(sockfd, sendBuff+totalRcv, sizeof(sendBuff) - totalRcv)) > 0) {
+			sendBuff[nread] = 0;
+			if (fputs(sendBuff, stdout) == EOF) {
+				printf("\n Error : Fputs error\n");
+			}
+			totalRcv += nread;
+		}
+		if (nread < 0) {
+			perror("\n Read error \n");
+		}
+		if (totalsent != totalRcv) {
 			printf("error occured - read from server \n");
 			return -1;
 		}
-		recvBuff[nread] = 0;
-//		if (fputs(recvBuff, stdout) == EOF) {
-//			printf("\n Error : Fputs error\n");
-//		}
 
+		//write to dst file
 		numdst = 0;
 		while (numdst < numsrc) {
 			// ALWAYS look at write()'s return value, don't assume everything is written
-			nwrite = write(fddst, recvBuff + numdst, numsrc - numdst);
+			nwrite = write(fddst, sendBuff + numdst, numsrc - numdst);
 			if (nwrite < 0) {
 				printf("error write() to output file: %s\n", strerror(errno));
 				return -1;

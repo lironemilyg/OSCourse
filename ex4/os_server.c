@@ -52,7 +52,8 @@ int xor_buffers(char* srcbuf, int numsrc, char* keyfilename) {
 	int numkey, num, i;
 	int fdkey = open(keyfilename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	if (fdkey < 0) {
-		printf("error open() output file %s: %s\n", keyfilename, strerror(errno));
+		printf("error open() output file %s: %s\n", keyfilename,
+				strerror(errno));
 		return errno;
 	}
 	char keybuf[BUF_SIZE];
@@ -121,7 +122,6 @@ int main(int argc, char *argv[]) {
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
 	memset(&serv_addr, '0', sizeof(serv_addr));
 
-
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY); // INADDR_ANY = any local machine address
 	serv_addr.sin_port = htons(port);
@@ -145,35 +145,48 @@ int main(int argc, char *argv[]) {
 			exit(errno);
 		}
 		int forked = fork();
-		if(forked == 0){
+		if (forked == 0) {
 			char srcbuf[BUF_SIZE];
+			int totalRcv = 0;
 			memset(srcbuf, '0', sizeof(srcbuf));
-			nread = read(connfd, srcbuf, sizeof(srcbuf) - 1);
-					if (nread < 0) {
-						printf("error occured - read from client \n");
-						return -1;
-					}
-					if (xor_buffers(srcbuf, nread, fdkey) < 0) {
-						printf("error occured - xor buffers failed \n");
-						return -1;
-					}
-					totalsent = 0;
-					int notwritten = strlen(srcbuf);
-					/* keep looping until nothing left to write*/
-					while (notwritten > 0) {
-						/* notwritten = how much we have left to write
-						 totalsent  = how much we've written so far
-						 nsent = how much we've written in last write() call */
-						nsent = write(connfd, srcbuf + totalsent, notwritten);
-						if (nread != nsent) {
-							printf("error occured - write to client \n");
-							return -1;
-						}
-						totalsent += nsent;
-						notwritten -= nsent;
-					}
-		}
-		else if(forked < 0){
+			//read buffer from client
+			while ((nread = read(connfd, srcbuf + totalRcv,
+					sizeof(srcbuf) - totalRcv)) > 0) {
+				srcbuf[nread] = 0;
+				if (fputs(srcbuf, stdout) == EOF) {
+					printf("\n Error : Fputs error\n");
+				}
+				totalRcv += nread;
+			}
+			if (nread < 0) {
+				perror("\n Read error \n");
+			}
+			//xor buffers
+			if (xor_buffers(srcbuf, totalRcv, keyfilename) < 0) {
+				printf("error occured - xor buffers failed \n");
+				return -1;
+			}
+
+			totalsent = 0;
+			int notwritten = strlen(srcbuf);
+			/* keep looping until nothing left to write*/
+			while (notwritten > 0) {
+				/* notwritten = how much we have left to write
+				 totalsent  = how much we've written so far
+				 nsent = how much we've written in last write() call */
+				nsent = write(connfd, srcbuf + totalsent, notwritten);
+				if (nread != nsent) {
+					printf("error occured - write to client \n");
+					return -1;
+				}
+				totalsent += nsent;
+				notwritten -= nsent;
+			}
+			if (totalRcv != totalsent) {
+				printf("error occured - sending enc file to server failed \n");
+				return -1;
+			}
+		} else if (forked < 0) {
 			printf("error occured - forked failed \n");
 			return -1;
 		}
