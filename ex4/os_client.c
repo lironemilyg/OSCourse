@@ -85,14 +85,14 @@ int main(int argc, char *argv[]) {
 		} else if (numsrc == 0) {
 			break;
 		}
-		printf("finish to read from file: %d bytes\n", numsrc);
+		printf("brakepoint - finish to read from file: %d bytes\n", numsrc);
 		//sending src buffer to server
 		int totalsent = 0;
 		int notwritten = numsrc;
-		printf("need to server: %d bytes\n", notwritten);
+		printf("brakepoint - need to server: %d bytes\n", notwritten);
 		/* keep looping until nothing left to write*/
 		while (notwritten > 0) {
-			printf("need to server: %d bytes\n", notwritten);
+			printf("brakepoint - need to server: %d bytes\n", notwritten);
 			/* notwritten = how much we have left to write
 			 totalsent  = how much we've written so far
 			 nsent = how much we've written in last write() call */
@@ -104,14 +104,16 @@ int main(int argc, char *argv[]) {
 			totalsent += nsent;
 			notwritten -= nsent;
 		}
-		printf("after while need to server: %d bytes\n", notwritten);
+		printf("brakepoint - after while need to server: %d bytes\n", notwritten);
 
 
-		printf("finish to sent to server: %d bytes\n", totalsent);
+		printf("brakepoint - finish to sent to server: %d bytes\n", totalsent);
 		if (totalsent != numsrc) {
 			printf("error occured - total write to server failed \n");
 			return -1;
 		}
+
+		printf("brakepoint - sent to server: %s\n\n", sendBuff);
 
 		//read dst buffer from server
 		int totalRcv = 0;
@@ -130,7 +132,8 @@ int main(int argc, char *argv[]) {
 			printf("error occured - read from server \n");
 			return -1;
 		}
-
+		printf("brakepoint - rcv from server: %d bytes\n", totalRcv);
+		printf("brakepoint - rcv from server: %s\n\n", sendBuff);
 		//write to dst file
 		numdst = 0;
 		while (numdst < numsrc) {
@@ -144,6 +147,7 @@ int main(int argc, char *argv[]) {
 			// increment our counter
 			numdst += nwrite;
 		}
+		printf("brakepoint -  write to dst : %d bytes\n", numdst);
 	}
 	close(fdsrc);
 	close(fddst);

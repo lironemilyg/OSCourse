@@ -52,7 +52,7 @@ int xor_buffers(char* srcbuf, int numsrc, char* keyfilename) {
 	int numkey, num, i;
 	int fdkey = open(keyfilename, O_RDONLY);
 	if (fdkey < 0) {
-		printf("error open() output file %s: %s\n", keyfilename,
+		printf("error open() key file %s: %s\n", keyfilename,
 				strerror(errno));
 		return errno;
 	}
@@ -161,11 +161,16 @@ int main(int argc, char *argv[]) {
 			if (nread < 0) {
 				perror("\n Read error \n");
 			}
+			printf("brakepoint - rcv from client: %d bytes\n", totalRcv);
+			printf("brakepoint - rcv from client: %s\n\n", srcbuf);
+
 			//xor buffers
 			if (xor_buffers(srcbuf, totalRcv, keyfilename) < 0) {
 				printf("error occured - xor buffers failed \n");
 				return -1;
 			}
+			printf("brakepoint - finish xor files: %s\n\n", srcbuf);
+
 
 			totalsent = 0;
 			int notwritten = strlen(srcbuf);
@@ -186,6 +191,7 @@ int main(int argc, char *argv[]) {
 				printf("error occured - sending enc file to server failed \n");
 				return -1;
 			}
+			printf("brakepoint - sent to client: %d bytes\n", totalsent);
 		} else if (forked < 0) {
 			printf("error occured - forked failed \n");
 			return -1;
