@@ -178,9 +178,10 @@ int main(int argc, char *argv[]) {
 
 
 			totalsent = 0;
-			int notwritten = strlen(srcbuf);
+			int notwritten = totalRcv;
 			/* keep looping until nothing left to write*/
 			while (notwritten > 0) {
+				printf("brakepoint - left to write : %d bytes\n", notwritten);
 				/* notwritten = how much we have left to write
 				 totalsent  = how much we've written so far
 				 nsent = how much we've written in last write() call */
