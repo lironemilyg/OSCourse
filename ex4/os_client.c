@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 
 	bool flag = true;
 	int numsrc, nsent, nwrite, numdst;
-
+	char numsrcstr[4];
 	while (flag) {
 		numsrc = read(fdsrc, sendBuff, BUF_SIZE);
 		if (numsrc < 0) {
@@ -84,9 +84,16 @@ int main(int argc, char *argv[]) {
 			exit(errno);
 		} else if (numsrc == 0) {
 			break;
-		} else if(numsrc < BUF_SIZE){
+		} else if (numsrc < BUF_SIZE) {
 			flag = false;
 		}
+		sprintf(numsrcstr, "%04d", numsrc);
+		nsent = write(sockfd, numsrcstr, 4);
+		if (nsent < 0) {
+			printf("error occured - write size to server \n");
+			return -1;
+		}
+		printf("need to write : %s   \n", numsrcstr);
 		printf("brakepoint - finish to read from file: %d bytes\n", numsrc);
 		//sending src buffer to server
 		int totalsent = 0;
@@ -99,14 +106,15 @@ int main(int argc, char *argv[]) {
 			 totalsent  = how much we've written so far
 			 nsent = how much we've written in last write() call */
 			nsent = write(sockfd, sendBuff + totalsent, notwritten);
-			if(nsent < 0){
+			if (nsent < 0) {
 				printf("error occured - write to server \n");
 				return -1;
 			}
 			totalsent += nsent;
 			notwritten -= nsent;
 		}
-		printf("brakepoint - after while need to server: %d bytes\n", notwritten);
+		printf("brakepoint - after while need to server: %d bytes\n",
+				notwritten);
 		printf("brakepoint - finish to sent to server: %d bytes\n", totalsent);
 		if (totalsent != numsrc) {
 			printf("error occured - total write to server failed \n");
@@ -132,7 +140,7 @@ int main(int argc, char *argv[]) {
 		totalRcv += nread;
 		if (nread < 0) {
 			printf("\n Read error :%s\n", strerror(errno));
-				}
+		}
 		printf("brakepoint - rcv from server: %d bytes\n", totalRcv);
 		printf("brakepoint - rcv from server: %s\n\n", sendBuff);
 		if (totalsent != totalRcv) {

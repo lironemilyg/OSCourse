@@ -151,14 +151,23 @@ int main(int argc, char *argv[]) {
 						strerror(errno));
 				return errno;
 			}
-		//	listenfd = connfd; //breakPoint
+			//	listenfd = connfd; //breakPoint
 			while (flag) {
+
 				char srcbuf[BUF_SIZE];
+				char numsrcstr[4];
 				int totalRcv = 0;
 				memset(srcbuf, '0', sizeof(srcbuf));
+				nread = read(connfd, numsrcstr, 4);
+				if (nread < 0) {
+					printf("error occured - read size from client \n");
+					return -1;
+				}
+				int needToRead = (int) strtol(numsrcstr, NULL, 10);
+				printf("need to read : %d   \n", needToRead);
 				//read buffer from client
 				while ((nread = read(connfd, srcbuf + totalRcv,
-						sizeof(srcbuf) - totalRcv)) > 0) {
+						needToRead - totalRcv)) > 0) {
 					srcbuf[nread] = 0;
 					if (fputs(srcbuf, stdout) == EOF) {
 						printf("\n Error : Fputs error\n");
@@ -175,8 +184,7 @@ int main(int argc, char *argv[]) {
 				if (totalRcv < BUF_SIZE) {
 					flag = false;
 					printf("brakepoint - 2 changing flag\n\n");
-				}
-				else if(totalRcv == 0){
+				} else if (totalRcv == 0) {
 					break;
 				}
 				//xor buffers
