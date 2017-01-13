@@ -105,8 +105,6 @@ int main(int argc, char *argv[]) {
 			notwritten -= nsent;
 		}
 		printf("brakepoint - after while need to server: %d bytes\n", notwritten);
-
-
 		printf("brakepoint - finish to sent to server: %d bytes\n", totalsent);
 		if (totalsent != numsrc) {
 			printf("error occured - total write to server failed \n");
@@ -118,6 +116,8 @@ int main(int argc, char *argv[]) {
 		//read dst buffer from server
 		int totalRcv = 0;
 		memset(sendBuff, '0', sizeof(sendBuff));
+		nread = read(sockfd, sendBuff + totalRcv,sizeof(sendBuff) - totalRcv);
+		printf("brakepoint - rcv read from server: %d bytes\n", nread);
 		//read buffer from client
 		while ((nread = read(sockfd, sendBuff + totalRcv,
 				sizeof(sendBuff) - totalRcv)) > 0) {

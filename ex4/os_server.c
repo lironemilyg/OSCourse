@@ -176,28 +176,6 @@ int main(int argc, char *argv[]) {
 			}
 			printf("brakepoint - finish xor files: %s\n\n", srcbuf);
 
-
-
-
-//			int totalsent = 0;
-//			int notwritten = totalRcv;
-//			printf("brakepoint - need to server: %d bytes\n", notwritten);
-//			/* keep looping until nothing left to write*/
-//			while (notwritten > 0) {
-//				printf("brakepoint - need to server: %d bytes\n", notwritten);
-//				/* notwritten = how much we have left to write
-//				 totalsent  = how much we've written so far
-//				 nsent = how much we've written in last write() call */
-//				nsent = write(connfd, srcbuf + totalsent, notwritten);
-//				if(nsent < 0){
-//					printf("error occured - write to server \n");
-//					return -1;
-//				}
-//				totalsent += nsent;
-//				notwritten -= nsent;
-//			}
-
-
 			int totalsent = 0;
 			int notwritten = totalRcv;
 			printf("brakepoint - need to server: %d bytes\n", notwritten);
