@@ -92,9 +92,9 @@ int main(int argc, char *argv[]) {
 		printf("invalid number of arguments\n");
 		exit(-1);
 	}
-	port = (unsigned short) strtol(argv[2], NULL, 10);
+	port = (short) strtol(argv[1], NULL, 10);
 	if (port < 1) {
-		printf("port - invalid arguments : %d\n", port);
+		printf("port - invalid arguments \n");
 		exit(-1);
 	}
 	char* keyfilename = argv[2];
