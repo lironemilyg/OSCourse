@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
 		printf("brakepoint - after while need to server: %d bytes\n",
 				notwritten);
 		printf("brakepoint - finish to sent to server: %d bytes\n", totalsent);
-		if (totalsent != numsrc) {
+		if ((totalsent != numsrc) && (flag ==true)) {
 			printf("error occured - total write to server failed \n");
 			return -1;
 		}
