@@ -125,6 +125,8 @@ int main(int argc, char *argv[]) {
 			}
 			totalRcv += nread;
 		}
+		printf("brakepoint - rcv from server: %d bytes\n", totalRcv);
+		printf("brakepoint - rcv from server: %s\n\n", sendBuff);
 		if (nread < 0) {
 			perror("\n Read error \n");
 		}
@@ -132,8 +134,6 @@ int main(int argc, char *argv[]) {
 			printf("error occured - read from server \n");
 			return -1;
 		}
-		printf("brakepoint - rcv from server: %d bytes\n", totalRcv);
-		printf("brakepoint - rcv from server: %s\n\n", sendBuff);
 		//write to dst file
 		numdst = 0;
 		while (numdst < numsrc) {
