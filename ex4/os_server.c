@@ -163,6 +163,7 @@ int main(int argc, char *argv[]) {
 					printf("error occured - read size from client \n");
 					return -1;
 				}
+				printf("need to read : %s   \n", numsrcstr);
 				int needToRead = (int) strtol(numsrcstr, NULL, 10);
 				printf("need to read : %d   \n", needToRead);
 				//read buffer from client
