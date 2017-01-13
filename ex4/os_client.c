@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
 			 totalsent  = how much we've written so far
 			 nsent = how much we've written in last write() call */
 			nsent = write(sockfd, sendBuff + totalsent, notwritten);
-			if(nsent<0){
+			if(nsent < 0){
 				printf("error occured - write to server \n");
 				return -1;
 			}
