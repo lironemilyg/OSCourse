@@ -209,7 +209,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		/* close socket  */
-		close(connfd);
+		//close(connfd);
 	}
 
 	return 0;
