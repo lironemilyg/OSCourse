@@ -48,14 +48,9 @@ int create_key_file(int fdkey, int keylen) {
 	return 0;
 }
 
-int xor_buffers(char* srcbuf, int numsrc, char* keyfilename) {
+int xor_buffers(char* srcbuf, int numsrc, int fdkey) {
+	printf("brakepoint - in xor_buffers \n");
 	int numkey, num, i;
-	int fdkey = open(keyfilename, O_RDONLY);
-	if (fdkey < 0) {
-		printf("error open() key file %s: %s\n", keyfilename,
-				strerror(errno));
-		return errno;
-	}
 	char keybuf[BUF_SIZE];
 	// set number of bytes read from the key file to 0
 	numkey = 0;
@@ -74,6 +69,7 @@ int xor_buffers(char* srcbuf, int numsrc, char* keyfilename) {
 			numkey += num;
 		}
 	}
+	printf("brakepoint - finish creating the key \n");
 	// now we have 'numsrc' bytes - from both input and key file
 	// perform encryption operation
 	// (using srcbuf, no need for another buffer)
@@ -148,6 +144,12 @@ int main(int argc, char *argv[]) {
 		if (forked == 0) {
 			char srcbuf[BUF_SIZE];
 			int totalRcv = 0;
+			int fdkey = open(keyfilename, O_RDONLY);
+				if (fdkey < 0) {
+					printf("error open() key file %s: %s\n", keyfilename,
+							strerror(errno));
+					return errno;
+				}
 			memset(srcbuf, '0', sizeof(srcbuf));
 			//read buffer from client
 			while ((nread = read(connfd, srcbuf + totalRcv,
@@ -165,7 +167,7 @@ int main(int argc, char *argv[]) {
 			printf("brakepoint - rcv from client: %s\n\n", srcbuf);
 
 			//xor buffers
-			if (xor_buffers(srcbuf, totalRcv, keyfilename) < 0) {
+			if (xor_buffers(srcbuf, totalRcv, fdkey) < 0) {
 				printf("error occured - xor buffers failed \n");
 				return -1;
 			}
