@@ -84,6 +84,8 @@ int main(int argc, char *argv[]) {
 			exit(errno);
 		} else if (numsrc == 0) {
 			break;
+		} else if(numsrc < BUF_SIZE){
+			flag = false;
 		}
 		printf("brakepoint - finish to read from file: %d bytes\n", numsrc);
 		//sending src buffer to server

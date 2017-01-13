@@ -174,6 +174,9 @@ int main(int argc, char *argv[]) {
 				if (totalRcv < BUF_SIZE) {
 					flag = false;
 				}
+				else if(totalRcv == 0){
+					break;
+				}
 				//xor buffers
 				if (xor_buffers(srcbuf, totalRcv, fdkey) < 0) {
 					printf("error occured - xor buffers failed \n");
