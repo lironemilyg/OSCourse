@@ -171,9 +171,10 @@ int main(int argc, char *argv[]) {
 				fflush(NULL);
 				printf("brakepoint 1 - rcv from client: %d bytes\n", totalRcv);
 				fflush(NULL);
-				printf("brakepoint - rcv from client: %s\n\n", srcbuf);
+				//printf("brakepoint - 1 rcv from client: %s\n\n", srcbuf);
 				if (totalRcv < BUF_SIZE) {
 					flag = false;
+					printf("brakepoint - 2 changing flag\n\n");
 				}
 				else if(totalRcv == 0){
 					break;
