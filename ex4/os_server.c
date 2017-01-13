@@ -49,16 +49,14 @@ int create_key_file(int fdkey, int keylen) {
 }
 
 int xor_buffers(char* srcbuf, int numsrc, int fdkey) {
-	printf("brakepoint - in xor_buffers \n");
+	printf("brakepoint 1 - in xor first char %c bytes\n", srcbuf[0]);
 	int numkey, num, i;
-	char keybuf[BUF_SIZE];
+	char keybuf[numsrc];
 	// set number of bytes read from the key file to 0
 	numkey = 0;
 	// iterate reading from key until reaching numsrc bytes
 	while (numkey < numsrc) {
 		num = read(fdkey, keybuf + numkey, numsrc - numkey);
-		//printf("brakepoint - in xor_buffers numkey : %d numsrc : %d \n", numkey,numsrc);
-		//printf("brakepoint - in xor_buffers - read %d \n", num);
 		if (num < 0) {
 			printf("error read() key: %s\n", strerror(errno));
 			exit(errno);
@@ -71,10 +69,6 @@ int xor_buffers(char* srcbuf, int numsrc, int fdkey) {
 			numkey += num;
 		}
 	}
-	printf("brakepoint - finish creating the key \n");
-	// now we have 'numsrc' bytes - from both input and key file
-	// perform encryption operation
-	// (using srcbuf, no need for another buffer)
 	for (i = 0; i < numsrc; ++i)
 		srcbuf[i] = srcbuf[i] ^ keybuf[i];
 	return 0;
@@ -84,7 +78,7 @@ int main(int argc, char *argv[]) {
 	short port;
 	int fdkey, keylen, nread;
 	bool flag = true;
-	//initialize arsg
+	//initialize args
 	if (argc != 4 && argc != 3) {
 		printf("invalid number of arguments\n");
 		exit(-1);
@@ -151,7 +145,6 @@ int main(int argc, char *argv[]) {
 						strerror(errno));
 				return errno;
 			}
-			//	listenfd = connfd; //breakPoint
 			while (flag) {
 				int size = BUF_SIZE+ 4;
 				char srcbuf[size];
@@ -171,33 +164,25 @@ int main(int argc, char *argv[]) {
 					perror("\n Read error \n");
 				}
 				strncpy(numsrcstr,srcbuf,4);
-				printf("need to read str : %s   \n", numsrcstr);
+				printf("breakpoint 2 - need to read str : %s   \n", numsrcstr);
 				int needToRead = (int) strtol(numsrcstr, NULL, 10);
-				printf("need to read : %d   \n", needToRead);
-				fflush(NULL);
-				printf("brakepoint 1 - rcv from client: %d bytes\n", totalRcv);
-				fflush(NULL);
-				//printf("brakepoint - 1 rcv from client: %s\n\n", srcbuf);
+				printf("breakpoint 3 - need to read int : %d   \n", needToRead);
+
 				if (needToRead < BUF_SIZE) {
 					flag = false;
-					printf("brakepoint - 2 changing flag\n\n");
 				} else if (totalRcv == 0) {
 					break;
 				}
 				//xor buffers
+				printf("brakepoint 4 - before xor first char %c bytes\n", srcbuf[4]);
 				if (xor_buffers(&srcbuf[4], needToRead, fdkey) < 0) {
 					printf("error occured - xor buffers failed \n");
 					return -1;
 				}
-				printf("brakepoint - finish xor files: %s\n\n", srcbuf);
 
 				int totalsent = 0;
 				int notwritten = needToRead;
-				printf("brakepoint - need to server: %d bytes\n", notwritten);
-				/* keep looping until nothing left to write*/
 				while (notwritten > 0) {
-					printf("brakepoint - need to client: %d bytes\n",
-							notwritten);
 					/* notwritten = how much we have left to write
 					 totalsent  = how much we've written so far
 					 nsent = how much we've written in last write() call */
@@ -209,21 +194,16 @@ int main(int argc, char *argv[]) {
 					totalsent += nsent;
 					notwritten -= nsent;
 				}
-
-				printf("brakepoint - finish to sent to client: %d bytes\n",
-						totalsent);
-				printf("\nbrakepoint - finish to sent to client: %s \n",
-						srcbuf);
-
+				printf("brakepoint 5 - after send to client : %d bytes\n", totalsent);
 				if (needToRead != totalsent) {
 					printf(
 							"error occured - sending enc file to server failed \n");
 					return -1;
 				}
 			}
+			printf("brakepoint 6 - disconnect from socket\n\n");
 			close(connfd);
 			close(fdkey);
-			printf("brakepoint - after close");
 		} else if (forked < 0) {
 			printf("error occured - forked failed \n");
 			return -1;
