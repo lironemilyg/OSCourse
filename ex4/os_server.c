@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
 						strerror(errno));
 				return errno;
 			}
-			listenfd = connfd; //breakPoint
+		//	listenfd = connfd; //breakPoint
 			while (flag) {
 				char srcbuf[BUF_SIZE];
 				int totalRcv = 0;
@@ -168,9 +168,10 @@ int main(int argc, char *argv[]) {
 				if (nread < 0) {
 					perror("\n Read error \n");
 				}
-				printf("brakepoint - rcv from client: %d bytes\n", totalRcv);
+				fflush(NULL);
+				printf("brakepoint 1 - rcv from client: %d bytes\n", totalRcv);
+				fflush(NULL);
 				printf("brakepoint - rcv from client: %s\n\n", srcbuf);
-
 				if (totalRcv < BUF_SIZE) {
 					flag = false;
 				}
