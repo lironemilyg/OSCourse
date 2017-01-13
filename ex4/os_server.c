@@ -153,22 +153,14 @@ int main(int argc, char *argv[]) {
 			}
 			//	listenfd = connfd; //breakPoint
 			while (flag) {
-
-				char srcbuf[BUF_SIZE];
+				int size = BUF_SIZE+ 4;
+				char srcbuf[size];
 				char numsrcstr[4];
 				int totalRcv = 0;
 				memset(srcbuf, '0', sizeof(srcbuf));
-				nread = read(connfd, numsrcstr, 4);
-				if (nread < 0) {
-					printf("error occured - read size from client \n");
-					return -1;
-				}
-				printf("need to read : %s   \n", numsrcstr);
-				int needToRead = (int) strtol(numsrcstr, NULL, 10);
-				printf("need to read : %d   \n", needToRead);
 				//read buffer from client
 				while ((nread = read(connfd, srcbuf + totalRcv,
-						needToRead - totalRcv)) > 0) {
+						size - totalRcv)) > 0) {
 					srcbuf[nread] = 0;
 					if (fputs(srcbuf, stdout) == EOF) {
 						printf("\n Error : Fputs error\n");
@@ -178,25 +170,29 @@ int main(int argc, char *argv[]) {
 				if (nread < 0) {
 					perror("\n Read error \n");
 				}
+				strncpy(numsrcstr,srcbuf,4);
+				printf("need to read str : %s   \n", numsrcstr);
+				int needToRead = (int) strtol(numsrcstr, NULL, 10);
+				printf("need to read : %d   \n", needToRead);
 				fflush(NULL);
 				printf("brakepoint 1 - rcv from client: %d bytes\n", totalRcv);
 				fflush(NULL);
 				//printf("brakepoint - 1 rcv from client: %s\n\n", srcbuf);
-				if (totalRcv < BUF_SIZE) {
+				if (needToRead < BUF_SIZE) {
 					flag = false;
 					printf("brakepoint - 2 changing flag\n\n");
 				} else if (totalRcv == 0) {
 					break;
 				}
 				//xor buffers
-				if (xor_buffers(srcbuf, totalRcv, fdkey) < 0) {
+				if (xor_buffers(&srcbuf[4], needToRead, fdkey) < 0) {
 					printf("error occured - xor buffers failed \n");
 					return -1;
 				}
 				printf("brakepoint - finish xor files: %s\n\n", srcbuf);
 
 				int totalsent = 0;
-				int notwritten = totalRcv;
+				int notwritten = needToRead;
 				printf("brakepoint - need to server: %d bytes\n", notwritten);
 				/* keep looping until nothing left to write*/
 				while (notwritten > 0) {
@@ -219,7 +215,7 @@ int main(int argc, char *argv[]) {
 				printf("\nbrakepoint - finish to sent to client: %s \n",
 						srcbuf);
 
-				if (totalRcv != totalsent) {
+				if (needToRead != totalsent) {
 					printf(
 							"error occured - sending enc file to server failed \n");
 					return -1;

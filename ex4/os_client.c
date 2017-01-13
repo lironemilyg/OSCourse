@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
 	int numsrc, nsent, nwrite, numdst;
 	char numsrcstr[4];
 	while (flag) {
+		memset(sendBuff, '0', sizeof(sendBuff));
 		numsrc = read(fdsrc, sendBuff, BUF_SIZE);
 		if (numsrc < 0) {
 			printf("error read() from input file: %s\n", strerror(errno));
@@ -97,7 +98,7 @@ int main(int argc, char *argv[]) {
 		printf("brakepoint - finish to read from file: %d bytes\n", numsrc);
 		//sending src buffer to server
 		int totalsent = 0;
-		int notwritten = numsrc;
+		int notwritten = BUF_SIZE;
 		printf("brakepoint - need to server: %d bytes\n", notwritten);
 		/* keep looping until nothing left to write*/
 		while (notwritten > 0) {
@@ -128,7 +129,7 @@ int main(int argc, char *argv[]) {
 		memset(sendBuff, '0', sizeof(sendBuff));
 		//read buffer from client
 		while ((nread = read(sockfd, sendBuff + totalRcv,
-				sizeof(sendBuff) - totalRcv)) > 0) {
+				totalsent - totalRcv)) > 0) {
 			printf("brakepoint - rcv read from server: %d bytes\n", nread);
 			sendBuff[nread] = 0;
 			if (fputs(sendBuff, stdout) == EOF) {
