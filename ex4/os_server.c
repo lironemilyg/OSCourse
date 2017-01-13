@@ -77,7 +77,6 @@ int xor_buffers(char* srcbuf, int numsrc, int fdkey) {
 	// (using srcbuf, no need for another buffer)
 	for (i = 0; i < numsrc; ++i)
 		srcbuf[i] = srcbuf[i] ^ keybuf[i];
-	close(fdkey);
 	return 0;
 }
 
@@ -96,23 +95,25 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 	char* keyfilename = argv[2];
-	fdkey = open(keyfilename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	if (fdkey < 0) {
-		printf("error open() output file %s: %s\n", argv[2], strerror(errno));
-		return errno;
-	}
+
 	if (argc == 4) {
 		keylen = strtol(argv[3], NULL, 10);
 		if (keylen < 1) {
 			printf("keylen - invalid arguments\n");
 			exit(-1);
 		}
+		fdkey = open(keyfilename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+			if (fdkey < 0) {
+				printf("error open() output file %s: %s\n", argv[2], strerror(errno));
+				return errno;
+			}
 		if (create_key_file(fdkey, keylen) < 0) {
 			printf("error in creating key file\n");
 			exit(-1);
 		}
+		close(fdkey);
 	}
-	close(fdkey);
+
 
 	int totalsent, nsent, len, n = 0, listenfd = 0, connfd = 0;
 	struct sockaddr_in serv_addr, my_addr, peer_addr;
@@ -195,6 +196,7 @@ int main(int argc, char *argv[]) {
 				printf("error occured - sending enc file to server failed \n");
 				return -1;
 			}
+			close(fdkey);
 			printf("brakepoint - sent to client: %d bytes\n", totalsent);
 		} else if (forked < 0) {
 			printf("error occured - forked failed \n");
