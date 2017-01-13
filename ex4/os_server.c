@@ -217,7 +217,7 @@ int main(int argc, char *argv[]) {
 			}
 			close(connfd);
 			close(fdkey);
-			printf("brakepoint - sent to client: %d bytes\n", totalsent);
+			printf("brakepoint - after close");
 		} else if (forked < 0) {
 			printf("error occured - forked failed \n");
 			return -1;
