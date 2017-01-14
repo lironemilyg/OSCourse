@@ -49,7 +49,7 @@ int create_key_file(int fdkey, int keylen) {
 }
 
 int xor_buffers(char* srcbuf, int numsrc, int fdkey) {
-	printf("brakepoint 1 - in xor first char %d bytes\n", srcbuf[0]);
+	printf("brakepoint 1 - in xor first char %c bytes\n", srcbuf[0]);
 	int numkey, num, i;
 	char keybuf[numsrc];
 	// set number of bytes read from the key file to 0
@@ -146,9 +146,9 @@ int main(int argc, char *argv[]) {
 				return errno;
 			}
 			while (flag) {
-				int size = BUF_SIZE + 4;
+				int size = BUF_SIZE + 5;
 				char srcbuf[size];
-				char numsrcstr[4];
+				char numsrcstr[5];
 				int totalRcv = 0;
 				printf("breakpoint 2 - buffer size : %d   \n", size);
 				memset(srcbuf, '0', sizeof(srcbuf));
@@ -165,6 +165,7 @@ int main(int argc, char *argv[]) {
 					perror("\n Read error \n");
 				}
 				strncpy(numsrcstr, srcbuf, 4);
+				numsrcstr[4] ='\0';
 				printf("breakpoint 2 - need to read str : %s   \n", numsrcstr);
 				int needToRead = (int) strtol(numsrcstr, NULL, 10);
 				printf("breakpoint 3 - need to read int : %d   \n", needToRead);
@@ -184,6 +185,16 @@ int main(int argc, char *argv[]) {
 						srcbuf[5]);
 				printf("brakepoint 4 - before xor first char %c bytes\n",
 						srcbuf[6]);
+				printf("brakepoint 4 - before xor first char %c bytes\n",
+						srcbuf[7]);
+				printf("brakepoint 4 - before xor first char %c bytes\n",
+						srcbuf[8]);
+				printf("brakepoint 4 - before xor first char %c bytes\n",
+						srcbuf[9]);
+				printf("brakepoint 4 - before xor first char %c bytes\n",
+						srcbuf[10]);
+				printf("brakepoint 4 - before xor first char %c bytes\n",
+										srcbuf[11]);
 				printf("\nbrakepoint 4.5 -after rcv in file from client : %s\n",
 						srcbuf);
 

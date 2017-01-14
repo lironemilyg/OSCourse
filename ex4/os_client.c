@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 
 	bool flag = true;
 	int numsrc, nsent, nwrite, numdst;
-	char numsrcstr[4];
+	char numsrcstr[5];
 	while (flag) {
 		memset(sendBuff, '0', sizeof(sendBuff));
 		numsrc = read(fdsrc, sendBuff, BUF_SIZE);
@@ -84,12 +84,13 @@ int main(int argc, char *argv[]) {
 		}
 		sprintf(numsrcstr, "%04d", numsrc);
 		printf("brakepoint 1 -after read input - sending to server: %d bytes\n", numsrc);
-
-		nsent = write(sockfd, numsrcstr, 4);
+		numsrcstr[4]='\0';
+		nsent = write(sockfd, numsrcstr, 5);
 		if (nsent < 0) {
 			printf("error occured - write size to server \n");
 			return -1;
 		}
+
 		printf("need to write : %s   \n", numsrcstr);
 		//sending src buffer to server
 		int totalsent = 0;
