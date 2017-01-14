@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 				return errno;
 			}
 			while (flag) {
-				int size = BUF_SIZE + 5;
+				int size = BUF_SIZE + 6;
 				char srcbuf[size];
 				char numsrcstr[5];
 				int totalRcv = 0;

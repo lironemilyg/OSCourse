@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	int sockfd = 0, nread = 0;
-	char sendBuff[BUF_SIZE];
+	char sendBuff[BUF_SIZE+1];
 	struct sockaddr_in serv_addr;
 	struct sockaddr_in my_addr, peer_addr;
 	socklen_t addrsize = sizeof(struct sockaddr_in);
@@ -82,6 +82,7 @@ int main(int argc, char *argv[]) {
 		} else if (numsrc < BUF_SIZE) {
 			flag = false;
 		}
+		numsrc[BUF_SIZE]='\0';
 		sprintf(numsrcstr, "%04d", numsrc);
 		printf("brakepoint 1 -after read input - sending to server: %d bytes\n", numsrc);
 		numsrcstr[4]='\0';
@@ -94,7 +95,7 @@ int main(int argc, char *argv[]) {
 		printf("need to write : %s   \n", numsrcstr);
 		//sending src buffer to server
 		int totalsent = 0;
-		int notwritten = BUF_SIZE;
+		int notwritten = BUF_SIZE+1;
 		/* keep looping until nothing left to write*/
 		while (notwritten > 0) {
 			/* notwritten = how much we have left to write
