@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
 				printf("brakepoint 5 - after send to client : %d bytes\n",
 						totalsent);
 				printf("\nbrakepoint 5.5 -after send enc file to client : %s\n",
-						srcbuf);
+						&srcbuf[5]);
 				if (needToRead != totalsent) {
 					printf(
 							"error occured - sending enc file to server failed \n");
