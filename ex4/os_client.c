@@ -79,8 +79,6 @@ int main(int argc, char *argv[]) {
 		if (numsrc < 0) {
 			printf("error read() from input file: %s\n", strerror(errno));
 			exit(errno);
-		} else if (numsrc == 0) {
-			break;
 		} else if (numsrc < BUF_SIZE) {
 			flag = false;
 		}
@@ -119,7 +117,6 @@ int main(int argc, char *argv[]) {
 		//read dst buffer from server
 		int totalRcv = 0;
 		memset(sendBuff, '0', sizeof(sendBuff));
-		//read buffer from client
 		while ((nread = read(sockfd, sendBuff + totalRcv,
 				numsrc - totalRcv)) > 0) {
 			sendBuff[nread] = 0;
