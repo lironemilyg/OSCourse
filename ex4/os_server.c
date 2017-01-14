@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 				return errno;
 			}
 			while (flag) {
-				int size = BUF_SIZE + 6;
+				int size = BUF_SIZE + 5;
 				char srcbuf[size];
 				char numsrcstr[5];
 				int totalRcv = 0;
@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
 				printf("brakepoint 5 - after send to client : %d bytes\n",
 						totalsent);
 				printf("\nbrakepoint 5.5 -after send enc file to client : %s\n",
-						&srcbuf[5]);
+						srcbuf);
 				if (needToRead != totalsent) {
 					printf(
 							"error occured - sending enc file to server failed \n");
