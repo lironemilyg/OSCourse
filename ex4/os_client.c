@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 		} else if (numsrc < BUF_SIZE) {
 			flag = false;
 		}
-		numsrc[BUF_SIZE]='\0';
+		sendBuff[BUF_SIZE]='\0';
 		sprintf(numsrcstr, "%04d", numsrc);
 		printf("brakepoint 1 -after read input - sending to server: %d bytes\n", numsrc);
 		numsrcstr[4]='\0';
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
 			totalsent += nsent;
 			notwritten -= nsent;
 		}
-		if ((totalsent != numsrc) && (flag ==true)) {
+		if ((totalsent != numsrc+1) && (flag ==true)) {
 			printf("error occured - total write to server failed \n");
 			return -1;
 		}
@@ -134,6 +134,8 @@ int main(int argc, char *argv[]) {
 			printf("error occured - read from server \n");
 			return -1;
 		}
+		sendBuff[BUF_SIZE]='\0';
+
 		printf("brakepoint 3 -after rcv enc file from server : %d bytes\n", totalRcv);
 		printf("\nbrakepoint 3.5 -after rcv enc file from server : %s\n", sendBuff);
 		//write to dst file
